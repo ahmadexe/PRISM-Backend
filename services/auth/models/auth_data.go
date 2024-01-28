@@ -7,4 +7,5 @@ type AuthData struct {
 	Email    string             `json:"email" bson:"email"`
 	Fullname string             `json:"fullname" bson:"fullname"`
 	Domain   string             `json:"domain" bson:"domain"`
+	CreatedAt int64             `json:"createdAt" bson:"createdAt"`
 }
