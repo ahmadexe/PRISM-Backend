@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	"github.com/ahmadexe/prism-backend/services/auth/configs"
 	"github.com/ahmadexe/prism-backend/services/auth/handlers"
 	"github.com/ahmadexe/prism-backend/services/auth/repositories"
