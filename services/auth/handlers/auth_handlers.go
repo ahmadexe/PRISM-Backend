@@ -28,3 +28,7 @@ func (handler *AuthHandler) AddUser(ctx *gin.Context) {
 
 	handler.AuthRepo.AddUser(user, ctx)
 }
+
+func (handler *AuthHandler) GetUserById(ctx *gin.Context) {
+	handler.AuthRepo.GetUserById(ctx)
+}
