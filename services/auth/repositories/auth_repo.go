@@ -1,8 +1,6 @@
 package repositories
 
 import (
-	"log"
-
 	"github.com/ahmadexe/prism-backend/services/auth/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,20 +15,7 @@ func InitAuthRepo(client *mongo.Client) *AuthRepo {
 	return &AuthRepo{Collection: collection}
 }
 
-func (repo *AuthRepo) AddUser(ctx *gin.Context) {
-	var user models.AuthData
-	if err := ctx.ShouldBindJSON(&user); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	log.Printf("%+v", user)
-
-	if err := user.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
+func (repo *AuthRepo) AddUser(user models.AuthData, ctx *gin.Context) {
 	result, err := repo.Collection.InsertOne(ctx, user)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
