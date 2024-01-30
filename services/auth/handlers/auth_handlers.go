@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"time"
+
 	"github.com/ahmadexe/prism-backend/services/auth/models"
 	"github.com/ahmadexe/prism-backend/services/auth/repositories"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type AuthHandler struct {
@@ -25,6 +28,9 @@ func (handler *AuthHandler) AddUser(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+
+	user.CreatedAt = time.Now().UnixMicro()
+	user.Id = primitive.NewObjectID()
 
 	handler.AuthRepo.AddUser(user, ctx)
 }

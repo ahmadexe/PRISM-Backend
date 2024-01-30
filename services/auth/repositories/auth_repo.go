@@ -1,12 +1,9 @@
 package repositories
 
 import (
-	"time"
-
 	"github.com/ahmadexe/prism-backend/services/auth/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -20,8 +17,6 @@ func InitAuthRepo(client *mongo.Client) *AuthRepo {
 }
 
 func (repo *AuthRepo) AddUser(user models.AuthData, ctx *gin.Context) {
-	user.CreatedAt = time.Now().UnixMicro()
-	user.Id = primitive.NewObjectID()
 	result, err := repo.Collection.InsertOne(ctx, user)
 
 	if err != nil {
