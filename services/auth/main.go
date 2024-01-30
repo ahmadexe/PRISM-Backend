@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-
 	configs := configs.InitConfigs()
 	client := configs.SetupDB()
 	authRepo := repositories.InitAuthRepo(client)
