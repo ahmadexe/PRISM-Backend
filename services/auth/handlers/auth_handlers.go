@@ -32,3 +32,18 @@ func (handler *AuthHandler) AddUser(ctx *gin.Context) {
 func (handler *AuthHandler) GetUserById(ctx *gin.Context) {
 	handler.AuthRepo.GetUserById(ctx)
 }
+
+func (handler *AuthHandler) UpdateUser(ctx *gin.Context) {
+	var user models.AuthData
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := user.Validate(); err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	handler.AuthRepo.UpdateUser(user, ctx)
+}

@@ -19,5 +19,6 @@ func (router *AuthRouter) SetupRoutes() {
 	{
 		auth.POST("/add-user", router.AuthHandler.AddUser)
 		auth.GET("/get-user/:id", router.AuthHandler.GetUserById)
+		auth.PUT("/update-user/", router.AuthHandler.UpdateUser)
 	}
 }

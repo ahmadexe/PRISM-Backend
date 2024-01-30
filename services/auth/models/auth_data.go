@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"time"
 
 	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -26,32 +25,6 @@ func (authData *AuthData) MarshalJSON() ([]byte, error) {
 		Id:    authData.Id.Hex(),
 		Alias: (*Alias)(authData),
 	})
-}
-
-func (authData *AuthData) UnmarshalJSON(d []byte) error {
-	// check if createdAt is not null
-	// if null, set createdAt to current time
-	// else, set createdAt to the value of createdAt
-
-	type Alias AuthData
-	ad := &struct {
-		Id        primitive.ObjectID `json:"id"`
-		CreatedAt int64              `json:"createdAt"`
-		*Alias
-	}{
-		CreatedAt: time.Now().UnixMicro(),
-		Id:        primitive.NewObjectID(),
-		Alias:     (*Alias)(authData),
-	}
-
-	if err := json.Unmarshal(d, &ad); err != nil {
-		return err
-	}
-
-	authData.Id = ad.Id
-	authData.CreatedAt = ad.CreatedAt
-
-	return nil
 }
 
 func (authData *AuthData) Validate() error {
