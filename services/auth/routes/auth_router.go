@@ -17,8 +17,8 @@ func InitAuthRouter(authHandler *handlers.AuthHandler, router *gin.Engine) *Auth
 func (router *AuthRouter) SetupRoutes() {
 	auth := router.Router.Group("/auth")
 	{
-		auth.POST("/add-user", router.AuthHandler.AddUser)
-		auth.GET("/get-user/:id", router.AuthHandler.GetUserById)
-		auth.PUT("/update-user/", router.AuthHandler.UpdateUser)
+		auth.POST("/users", router.AuthHandler.AddUser)
+		auth.GET("/users/:id", router.AuthHandler.GetUserById)
+		auth.PUT("/users/", router.AuthHandler.UpdateUser)
 	}
 }
