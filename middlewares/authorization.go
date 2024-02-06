@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"net/http"
+	"strings"
 
 	firebase "firebase.google.com/go"
 	"github.com/gin-gonic/gin"
@@ -26,6 +27,8 @@ func (middleware *authMiddleware) VerifyUser(ctx *gin.Context) {
 		return
 	}
 
+	authToken = strings.TrimPrefix(authToken, "Bearer ")
+	
 	_, err = client.VerifyIDToken(ctx, authToken)
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
