@@ -19,21 +19,21 @@ func InitAuthRepo(client *mongo.Client) *AuthRepo {
 }
 
 func (repo *AuthRepo) AddUser(user models.AuthData, ctx *gin.Context) {
-	result, err := repo.Collection.InsertOne(ctx, user)
+	_, err := repo.Collection.InsertOne(ctx, user)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error adding user to database. Please try again later."})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "User added successfully", "data": result})
+	ctx.JSON(http.StatusCreated, gin.H{"message": "User added successfully", "createdAt": user.CreatedAt, "id": user.Id})
 }
 
 func (repo *AuthRepo) GetUserById(ctx *gin.Context) {
 	id := ctx.Param("id")
 	filter := bson.M{"uid": id}
 	var user models.AuthData
-	
+
 	if err := repo.Collection.FindOne(ctx, filter).Decode(&user); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error adding user to database. Please try again later."})
 		return
