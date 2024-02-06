@@ -3,6 +3,7 @@ package handlers
 import (
 	"time"
 
+	firebase "firebase.google.com/go"
 	"github.com/ahmadexe/prism-backend/services/auth/models"
 	"github.com/ahmadexe/prism-backend/services/auth/repositories"
 	"github.com/gin-gonic/gin"
@@ -11,10 +12,15 @@ import (
 
 type AuthHandler struct {
 	AuthRepo *repositories.AuthRepo
+	App *firebase.App
 }
 
-func InitAuthHandler(authRepo *repositories.AuthRepo) *AuthHandler {
-	return &AuthHandler{AuthRepo: authRepo}
+type Token struct {
+	MyToken string `json:"token"`
+}
+
+func InitAuthHandler(authRepo *repositories.AuthRepo, app *firebase.App) *AuthHandler {
+	return &AuthHandler{AuthRepo: authRepo, App: app}
 }
 
 func (handler *AuthHandler) AddUser(ctx *gin.Context) {
