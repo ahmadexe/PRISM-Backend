@@ -12,7 +12,7 @@ type AuthRepo struct {
 }
 
 func InitAuthRepo(client *mongo.Client) *AuthRepo {
-	collection := client.Database("auth-service").Collection("users")
+	collection := client.Database("prism-dev").Collection("users")
 	return &AuthRepo{Collection: collection}
 }
 
