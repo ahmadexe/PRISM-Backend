@@ -5,8 +5,6 @@ import (
 	"log"
 
 	firebase "firebase.google.com/go"
-	// "github.com/ahmadexe/prism-backend/middlewares"
-	// "github.com/ahmadexe/prism-backend/middlewares"
 	"github.com/ahmadexe/prism-backend/services/auth/configs"
 	"github.com/ahmadexe/prism-backend/services/auth/handlers"
 	"github.com/ahmadexe/prism-backend/services/auth/repositories"
