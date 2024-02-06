@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"net/http"
+
 	"github.com/ahmadexe/prism-backend/services/auth/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -20,11 +22,11 @@ func (repo *AuthRepo) AddUser(user models.AuthData, ctx *gin.Context) {
 	result, err := repo.Collection.InsertOne(ctx, user)
 
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error adding user to database. Please try again later."})
 		return
 	}
 
-	ctx.JSON(200, gin.H{"message": "User added successfully", "data": result})
+	ctx.JSON(http.StatusCreated, gin.H{"message": "User added successfully", "data": result})
 }
 
 func (repo *AuthRepo) GetUserById(ctx *gin.Context) {
@@ -33,11 +35,11 @@ func (repo *AuthRepo) GetUserById(ctx *gin.Context) {
 	var user models.AuthData
 	
 	if err := repo.Collection.FindOne(ctx, filter).Decode(&user); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error adding user to database. Please try again later."})
 		return
 	}
 
-	ctx.JSON(200, gin.H{"message": "User found successfully", "data": user})
+	ctx.JSON(http.StatusOK, gin.H{"message": "User found successfully", "data": user})
 }
 
 func (repo *AuthRepo) UpdateUser(user models.AuthData, ctx *gin.Context) {
@@ -45,9 +47,9 @@ func (repo *AuthRepo) UpdateUser(user models.AuthData, ctx *gin.Context) {
 	update := bson.M{"$set": user}
 
 	if _, err := repo.Collection.UpdateOne(ctx, filter, update); err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error adding user to database. Please try again later."})
 		return
 	}
 
-	ctx.JSON(200, gin.H{"message": "User updated successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
