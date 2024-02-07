@@ -35,11 +35,11 @@ func (repo *AuthRepo) GetUserById(ctx *gin.Context) {
 	var user models.AuthData
 
 	if err := repo.Collection.FindOne(ctx, filter).Decode(&user); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error adding user to database. Please try again later."})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "User found successfully", "data": user})
+	ctx.JSON(http.StatusOK, user)
 }
 
 func (repo *AuthRepo) UpdateUser(user models.AuthData, ctx *gin.Context) {
