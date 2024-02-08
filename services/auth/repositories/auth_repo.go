@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/ahmadexe/prism-backend/services/auth/models"
@@ -22,6 +23,7 @@ func (repo *AuthRepo) AddUser(user models.AuthData, ctx *gin.Context) {
 	_, err := repo.Collection.InsertOne(ctx, user)
 
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error adding user to database. Please try again later."})
 		return
 	}
@@ -35,6 +37,7 @@ func (repo *AuthRepo) GetUserById(ctx *gin.Context) {
 	var user models.AuthData
 
 	if err := repo.Collection.FindOne(ctx, filter).Decode(&user); err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
 		return
 	}
@@ -47,6 +50,7 @@ func (repo *AuthRepo) UpdateUser(user models.AuthData, ctx *gin.Context) {
 	update := bson.M{"$set": user}
 
 	if _, err := repo.Collection.UpdateOne(ctx, filter, update); err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error adding user to database. Please try again later."})
 		return
 	}
