@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -23,11 +24,13 @@ func InitAuthHandler(authRepo *repositories.AuthRepo, app *firebase.App) *AuthHa
 func (handler *AuthHandler) AddUser(ctx *gin.Context) {
 	var user models.AuthData
 	if err := ctx.ShouldBindJSON(&user); err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
 		return
 	}
 
 	if err := user.Validate(); err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
 		return
 	}
@@ -45,11 +48,13 @@ func (handler *AuthHandler) GetUserById(ctx *gin.Context) {
 func (handler *AuthHandler) UpdateUser(ctx *gin.Context) {
 	var user models.AuthData
 	if err := ctx.ShouldBindJSON(&user); err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := user.Validate(); err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
