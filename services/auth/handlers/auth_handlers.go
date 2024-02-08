@@ -16,10 +16,6 @@ type AuthHandler struct {
 	App *firebase.App
 }
 
-type Token struct {
-	MyToken string `json:"token"`
-}
-
 func InitAuthHandler(authRepo *repositories.AuthRepo, app *firebase.App) *AuthHandler {
 	return &AuthHandler{AuthRepo: authRepo, App: app}
 }
