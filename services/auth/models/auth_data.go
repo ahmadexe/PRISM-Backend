@@ -8,12 +8,17 @@ import (
 )
 
 type AuthData struct {
-	Id        primitive.ObjectID `json:"id" bson:"_id"`
-	Uid       *string            `json:"uid" bson:"uid" validate:"required"`
-	Email     *string            `json:"email" bson:"email" validate:"required"`
-	Fullname  *string            `json:"fullname" validate:"required" bson:"fullname"`
-	Domain    *string            `json:"domain" validate:"required" bson:"domain"`
-	CreatedAt int64              `json:"createdAt" bson:"createdAt"`
+	Id             primitive.ObjectID `json:"id" bson:"_id"`
+	Uid            *string            `json:"uid" bson:"uid" validate:"required"`
+	Email          *string            `json:"email" bson:"email" validate:"required"`
+	Fullname       *string            `json:"fullname" validate:"required" bson:"fullname"`
+	Domain         *string            `json:"domain" validate:"required" bson:"domain"`
+	Bio            string             `json:"bio" bson:"bio"`
+	ImageUrl       *string            `json:"imageUrl" bson:"imageUrl"`
+	BannerImageUrl *string            `json:"bannerImageUrl" bson:"bannerImageUrl"`
+	Followers      []string           `json:"followers" bson:"followers"`
+	Following      []string           `json:"following" bson:"following"`
+	CreatedAt      int64              `json:"createdAt" bson:"createdAt"`
 }
 
 func (authData *AuthData) MarshalJSON() ([]byte, error) {
