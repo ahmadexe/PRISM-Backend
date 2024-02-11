@@ -37,6 +37,8 @@ func (handler *AuthHandler) AddUser(ctx *gin.Context) {
 
 	user.CreatedAt = time.Now().UnixMicro()
 	user.Id = primitive.NewObjectID()
+	user.Followers = []string{}
+	user.Following = []string{}
 
 	handler.AuthRepo.AddUser(user, ctx)
 }

@@ -13,7 +13,7 @@ type AuthData struct {
 	Email          *string            `json:"email" bson:"email" validate:"required"`
 	Fullname       *string            `json:"fullname" validate:"required" bson:"fullname"`
 	Domain         *string            `json:"domain" validate:"required" bson:"domain"`
-	Bio            string             `json:"bio" bson:"bio"`
+	Bio            *string             `json:"bio" bson:"bio"`
 	ImageUrl       *string            `json:"imageUrl" bson:"imageUrl"`
 	BannerImageUrl *string            `json:"bannerImageUrl" bson:"bannerImageUrl"`
 	Followers      []string           `json:"followers" bson:"followers"`

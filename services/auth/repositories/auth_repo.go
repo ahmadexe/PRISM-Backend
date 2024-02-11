@@ -28,7 +28,7 @@ func (repo *AuthRepo) AddUser(user models.AuthData, ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "User added successfully", "createdAt": user.CreatedAt, "id": user.Id})
+	ctx.JSON(http.StatusCreated, user)
 }
 
 func (repo *AuthRepo) GetUserById(ctx *gin.Context) {
