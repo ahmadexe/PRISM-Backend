@@ -1,3 +1,4 @@
 # app keys
 /env_var/app_keys.json
 *.pem
+.DS_Store
