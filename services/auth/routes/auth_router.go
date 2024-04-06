@@ -22,6 +22,6 @@ func (router *AuthRouter) SetupRoutes() {
 	{
 		auth.POST("/users", router.AuthHandler.AddUser)
 		auth.GET("/users/:id", router.AuthHandler.GetUserById)
-		auth.PUT("/users/", router.AuthHandler.UpdateUser)
+		auth.PUT("/users", router.AuthHandler.UpdateUser)
 	}
 }
