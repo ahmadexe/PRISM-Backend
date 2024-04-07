@@ -15,6 +15,7 @@ type AuthData struct {
 	Domain            *string            `json:"domain" validate:"required" bson:"domain"`
 	IsBusinessAcc     bool               `json:"isBusinessAcc" bson:"isBusinessAcc"`
 	IsServiceProvider bool               `json:"isServiceProvider" bson:"isServiceProvider"`
+	IsRanked          bool               `json:"isRanked" bson:"isRanked"`
 	Bio               *string            `json:"bio" bson:"bio"`
 	ImageUrl          *string            `json:"imageUrl" bson:"imageUrl"`
 	BannerImageUrl    *string            `json:"bannerImageUrl" bson:"bannerImageUrl"`
