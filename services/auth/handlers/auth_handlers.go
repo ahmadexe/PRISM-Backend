@@ -13,12 +13,12 @@ import (
 )
 
 type AuthHandler struct {
-	AuthRepo *repositories.AuthRepo
+	authRepo *repositories.AuthRepo
 	App *firebase.App
 }
 
 func InitAuthHandler(authRepo *repositories.AuthRepo, app *firebase.App) *AuthHandler {
-	return &AuthHandler{AuthRepo: authRepo, App: app}
+	return &AuthHandler{authRepo: authRepo, App: app}
 }
 
 func (handler *AuthHandler) AddUser(ctx *gin.Context) {
@@ -40,11 +40,11 @@ func (handler *AuthHandler) AddUser(ctx *gin.Context) {
 	user.Followers = []string{}
 	user.Following = []string{}
 
-	handler.AuthRepo.AddUser(user, ctx)
+	handler.authRepo.AddUser(user, ctx)
 }
 
 func (handler *AuthHandler) GetUserById(ctx *gin.Context) {
-	handler.AuthRepo.GetUserById(ctx)
+	handler.authRepo.GetUserById(ctx)
 }
 
 func (handler *AuthHandler) UpdateUser(ctx *gin.Context) {
@@ -61,5 +61,5 @@ func (handler *AuthHandler) UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	handler.AuthRepo.UpdateUser(user, ctx)
+	handler.authRepo.UpdateUser(user, ctx)
 }
