@@ -19,9 +19,7 @@ func InitPostHandler(repo *repositories.PostRepo) *PostHandler {
 }
 
 func (handler *PostHandler) AddPost(ctx *gin.Context) {
-	var post models.Post = models.Post{
-
-	}
+	var post models.Post
 
 	if err := ctx.ShouldBindJSON(&post); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
