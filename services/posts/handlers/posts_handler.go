@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -21,7 +20,7 @@ func InitPostHandler(repo *repositories.PostRepo) *PostHandler {
 
 func (handler *PostHandler) AddPost(ctx *gin.Context) {
 	var post models.Post = models.Post{
-		
+
 	}
 
 	if err := ctx.ShouldBindJSON(&post); err != nil {
@@ -30,7 +29,6 @@ func (handler *PostHandler) AddPost(ctx *gin.Context) {
 	}
 
 	if err := post.Validate(); err != nil {
-		log.Println("2")
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
 		return
 	}
