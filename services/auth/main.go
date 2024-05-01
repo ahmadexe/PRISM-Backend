@@ -23,12 +23,12 @@ func main() {
 	configs := configs.InitConfigs()
 	client := configs.SetupDB()
 	authRepo := repositories.InitAuthRepo(client)
-	authHanler := handlers.InitAuthHandler(authRepo, app)
+	authHanler := handlers.InitAuthHandler(authRepo)
 
 	router := gin.Default()
 
 	authRouter := routes.InitAuthRouter(authHanler, router)
-	authRouter.SetupRoutes()
+	authRouter.SetupRoutes(app)
 	
 	router.Run(configs.Host + ":" + configs.Port)
 

@@ -18,7 +18,6 @@ func InitPostRepo(client *mongo.Client) *PostRepo {
 	return &PostRepo{collection: collection}
 }
 
-// AddPost adds a post to the database
 func (repo *PostRepo) AddPost(post models.Post, ctx *gin.Context) {
 	_, err := repo.collection.InsertOne(ctx, post)
 
