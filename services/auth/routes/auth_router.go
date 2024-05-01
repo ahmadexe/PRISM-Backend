@@ -18,7 +18,7 @@ func InitAuthRouter(authHandler *handlers.AuthHandler, router *gin.Engine) *Auth
 
 func (router *AuthRouter) SetupRoutes(app *firebase.App) {
 	authMiddleware := middlewares.InitAuthMiddleware(app)
-	auth := router.router.Group("/auth")
+	auth := router.router.Group("/v1")
 	auth.Use(authMiddleware.VerifyUser)
 	{
 		auth.POST("/users", router.authHandler.AddUser)

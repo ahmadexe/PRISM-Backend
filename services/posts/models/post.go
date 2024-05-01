@@ -9,13 +9,14 @@ import (
 type Post struct {
 	Id           primitive.ObjectID `json:"id" bson:"_id"`
 	UserId       string             `json:"userId" bson:"userId" validate:"required"`
-	ImageUrl     *string            `json:"imageUrl" bson:"imageUrl"`
-	Caption      *string            `json:"caption" bson:"caption"`
+	ImageUrl     *string            `json:"imageUrl" bson:"imageUrl" validate:"required_without=Caption"`
+	Caption      *string            `json:"caption" bson:"caption" validate:"required_without=ImageUrl"`
 	NoOfViews    int                `json:"noOfViews" bson:"noOfViews"`
 	NoOfLikes    int                `json:"noOfLikes" bson:"noOfLikes"`
 	NoOfComments int                `json:"noOfComments" bson:"noOfComments"`
 	IsBanned     bool               `json:"isBanned" bson:"isBanned"`
 	TotalReports int                `json:"totalReports" bson:"totalReports"`
+	CreatedAt    int64              `json:"createdAt" bson:"createdAt"`
 }
 
 func (post *Post) MarshalJSON() ([]byte, error) {

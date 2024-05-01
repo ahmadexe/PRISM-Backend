@@ -1,8 +1,10 @@
 package repositories
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/ahmadexe/prism-backend/services/posts/models"
 	"github.com/gin-gonic/gin"
@@ -19,7 +21,10 @@ func InitPostRepo(client *mongo.Client) *PostRepo {
 }
 
 func (repo *PostRepo) AddPost(post models.Post, ctx *gin.Context) {
-	_, err := repo.collection.InsertOne(ctx, post)
+	c, cancel := context.WithTimeout(context.Background(), time.Second * 5)
+	defer cancel()
+
+	_, err := repo.collection.InsertOne(c, post)
 
 	if err != nil {
 		log.Println(err)
