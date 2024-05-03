@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	firebase "firebase.google.com/go"
 	"github.com/ahmadexe/prism-backend/services/auth/models"
 	"github.com/ahmadexe/prism-backend/services/auth/repositories"
 	"github.com/gin-gonic/gin"
@@ -14,11 +13,10 @@ import (
 
 type AuthHandler struct {
 	authRepo *repositories.AuthRepo
-	App *firebase.App
 }
 
-func InitAuthHandler(authRepo *repositories.AuthRepo, app *firebase.App) *AuthHandler {
-	return &AuthHandler{authRepo: authRepo, App: app}
+func InitAuthHandler(authRepo *repositories.AuthRepo) *AuthHandler {
+	return &AuthHandler{authRepo: authRepo}
 }
 
 func (handler *AuthHandler) AddUser(ctx *gin.Context) {

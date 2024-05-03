@@ -1,6 +1,7 @@
 package routes
 
 import (
+	firebase "firebase.google.com/go"
 	"github.com/ahmadexe/prism-backend/middlewares"
 	"github.com/ahmadexe/prism-backend/services/auth/handlers"
 	"github.com/gin-gonic/gin"
@@ -15,9 +16,9 @@ func InitAuthRouter(authHandler *handlers.AuthHandler, router *gin.Engine) *Auth
 	return &AuthRouter{authHandler: authHandler, router: router}
 }
 
-func (router *AuthRouter) SetupRoutes() {
-	authMiddleware := middlewares.InitAuthMiddleware(router.authHandler.App)
-	auth := router.router.Group("/auth")
+func (router *AuthRouter) SetupRoutes(app *firebase.App) {
+	authMiddleware := middlewares.InitAuthMiddleware(app)
+	auth := router.router.Group("/v1")
 	auth.Use(authMiddleware.VerifyUser)
 	{
 		auth.POST("/users", router.authHandler.AddUser)
