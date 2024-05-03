@@ -18,6 +18,10 @@ func (r *PostsRouter) SetupRoutes() {
 	posts := r.router.Group("/v1")
 	{
 		posts.POST("/posts", r.postsHandler.AddPost)
+		posts.DELETE("/posts/:id", r.postsHandler.DeletePost)
+		posts.GET("/posts/:id", r.postsHandler.GetPostById)
+		posts.GET("/posts", r.postsHandler.GetPosts)
+		posts.PUT("/posts/:id", r.postsHandler.UpdatePost)
 	}
 }
 
