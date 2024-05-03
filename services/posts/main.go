@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ahmadexe/prism-backend/services/auth/configs"
+	"github.com/ahmadexe/prism-backend/services/posts/configs"
 	"github.com/ahmadexe/prism-backend/services/posts/handlers"
 	"github.com/ahmadexe/prism-backend/services/posts/repositories"
 	"github.com/ahmadexe/prism-backend/services/posts/routes"
