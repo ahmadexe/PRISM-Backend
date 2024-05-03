@@ -18,7 +18,7 @@ type PostRepo struct {
 }
 
 func InitPostRepo(client *mongo.Client) *PostRepo {
-	collection := client.Database("prism-dev").Collection("posts")
+	collection := client.Database("posts-db").Collection("posts")
 	return &PostRepo{collection: collection}
 }
 
