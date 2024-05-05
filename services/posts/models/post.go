@@ -12,6 +12,8 @@ type Post struct {
 	ImageUrl     *string            `json:"imageUrl" bson:"imageUrl" validate:"required_without=Caption"`
 	Caption      *string            `json:"caption" bson:"caption" validate:"required_without=ImageUrl"`
 	NoOfViews    int                `json:"noOfViews" bson:"noOfViews"`
+	UserName     string             `json:"userName" bson:"userName"`
+	Category     string             `json:"category" bson:"category"`
 	UpVotes      int                `json:"upVotes" bson:"upVotes"`
 	DownVotes    int                `json:"downVotes" bson:"downVotes"`
 	NoOfComments int                `json:"noOfComments" bson:"noOfComments"`
