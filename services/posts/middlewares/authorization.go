@@ -36,7 +36,6 @@ func VerifyUser(ctx *gin.Context) {
 		Token: authToken,
 	})
 
-
 	if err != nil {
 		if strings.Contains(err.Error(), "invalid toke") {
 			ctx.AbortWithStatus(http.StatusUnauthorized)

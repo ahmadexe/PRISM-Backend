@@ -30,7 +30,7 @@ func (handler *PostHandler) AddPost(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
 		return
 	}
-	
+
 	post.Id = primitive.NewObjectID()
 	post.CreatedAt = time.Now().UnixMicro()
 
@@ -44,7 +44,7 @@ func (handler *PostHandler) DeletePost(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid post id."})
 		return
 	}
-	
+
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid post id."})
@@ -56,7 +56,7 @@ func (handler *PostHandler) DeletePost(ctx *gin.Context) {
 
 func (handler *PostHandler) GetPostById(ctx *gin.Context) {
 	id := ctx.Param("id")
-	
+
 	if id == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid post id."})
 		return

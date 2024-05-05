@@ -22,7 +22,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	
+
 	grpcServer := grpc.NewServer()
 	pb.RegisterAuthServer(grpcServer, &AuthGrpcServer{})
 
@@ -36,7 +36,7 @@ func (s *AuthGrpcServer) Authorize(ctx context.Context, req *pb.AuthorizeRequest
 	opt := option.WithCredentialsFile("../../env_var/app_keys.json")
 
 	app, err := firebase.NewApp(context.Background(), nil, opt)
-	
+
 	if err != nil {
 		log.Fatalf("error initializing app: %v\n", err)
 		return &pb.AuthorizeResponse{
@@ -50,7 +50,7 @@ func (s *AuthGrpcServer) Authorize(ctx context.Context, req *pb.AuthorizeRequest
 			IsAuthorized: false,
 		}, err
 	}
-	
+
 	_, err = client.VerifyIDToken(ctx, req.Token)
 	if err != nil {
 		en := errors.New("invalid token")

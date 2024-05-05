@@ -8,7 +8,7 @@ import (
 
 type PostsRouter struct {
 	postsHandler *handlers.PostHandler
-	router *gin.Engine
+	router       *gin.Engine
 }
 
 func InitPostsRouter(postsHandler *handlers.PostHandler, router *gin.Engine) *PostsRouter {
@@ -26,4 +26,3 @@ func (r *PostsRouter) SetupRoutes() {
 		posts.PUT("/posts/:id", r.postsHandler.UpdatePost)
 	}
 }
-

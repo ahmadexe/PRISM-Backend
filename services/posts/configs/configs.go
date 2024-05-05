@@ -9,8 +9,8 @@ import (
 )
 
 type Configs struct {
-	Port string
-	Host string
+	Port  string
+	Host  string
 	DbUri string
 }
 
@@ -26,12 +26,12 @@ func (configs *Configs) SetupDB() *mongo.Client {
 
 	if err != nil {
 		panic(err)
-	} 
+	}
 
 	return client
 }
 
-func readEnv() (string, string, string)  {
+func readEnv() (string, string, string) {
 	viper.AddConfigPath("./configs")
 	viper.SetConfigName("configs")
 	viper.SetConfigType("json")

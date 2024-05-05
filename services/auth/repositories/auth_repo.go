@@ -37,7 +37,7 @@ func (repo *AuthRepo) AddUser(user models.AuthData, ctx *gin.Context) {
 }
 
 func (repo *AuthRepo) GetUserById(ctx *gin.Context) {
-	c, cancel := context.WithTimeout(context.Background(), time.Second * 5)
+	c, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
 	id := ctx.Param("id")
