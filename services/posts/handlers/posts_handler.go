@@ -33,6 +33,9 @@ func (handler *PostHandler) AddPost(ctx *gin.Context) {
 
 	post.Id = primitive.NewObjectID()
 	post.CreatedAt = time.Now().UnixMicro()
+	post.UpVotedBy = []string{}
+	post.DownVotedBy = []string{}
+	post.CommentedBy = []string{}
 
 	handler.repo.AddPost(post, ctx)
 }
