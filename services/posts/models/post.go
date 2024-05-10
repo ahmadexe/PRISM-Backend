@@ -24,7 +24,7 @@ type Post struct {
 	CommentedBy    []string           `json:"commentedBy" bson:"commentedBy"`
 	IsBanned       bool               `json:"isBanned" bson:"isBanned"`
 	TotalReports   int                `json:"totalReports" bson:"totalReports"`
-	CreatedAt      int64              `json:"createdAt" bson:"createdAt"`
+	CreatedAt      int64              `json:"createdAt" bson:"createdAt" validate:"required"`
 }
 
 func (post *Post) MarshalJSON() ([]byte, error) {

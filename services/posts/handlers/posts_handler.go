@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/ahmadexe/prism-backend/services/posts/models"
 	"github.com/ahmadexe/prism-backend/services/posts/repositories"
@@ -32,7 +31,6 @@ func (handler *PostHandler) AddPost(ctx *gin.Context) {
 	}
 
 	post.Id = primitive.NewObjectID()
-	post.CreatedAt = time.Now().UnixMicro()
 	post.UpVotedBy = []string{}
 	post.DownVotedBy = []string{}
 	post.CommentedBy = []string{}
