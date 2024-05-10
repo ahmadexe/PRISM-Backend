@@ -104,3 +104,32 @@ func (handler *PostHandler) UpdatePost(ctx *gin.Context) {
 
 	handler.repo.UpdatePost(objectId, post, ctx)
 }
+
+func (handler *PostHandler) UpVotePost(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid post id."})
+		return
+	}
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid post id."})
+		return
+	}
+
+	uId := ctx.Param("userId")
+	if uId == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid user id."})
+		return
+	}
+
+	userId, err := primitive.ObjectIDFromHex(uId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid user id."})
+		return
+	}
+
+	handler.repo.UpVotePost(objectId, userId, ctx)
+}
