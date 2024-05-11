@@ -1,14 +1,15 @@
-package models
+package data
 
 import (
-	"encoding/json"
+	// "encoding/json"
+
 	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Post struct {
 	Id             primitive.ObjectID `json:"id" bson:"_id"`
-	UserId         string             `json:"userId" bson:"userId" validate:"required"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId" validate:"required"`
 	Title          string             `json:"title" bson:"title" validate:"required"`
 	ImageUrl       *string            `json:"imageUrl" bson:"imageUrl" validate:"required_without=Description"`
 	Description    *string            `json:"description" bson:"description" validate:"required_without=ImageUrl"`
@@ -25,17 +26,6 @@ type Post struct {
 	IsBanned       bool               `json:"isBanned" bson:"isBanned"`
 	TotalReports   int                `json:"totalReports" bson:"totalReports"`
 	CreatedAt      int64              `json:"createdAt" bson:"createdAt" validate:"required"`
-}
-
-func (post *Post) MarshalJSON() ([]byte, error) {
-	type Alias Post
-	return json.Marshal(&struct {
-		Id string `json:"id"`
-		*Alias
-	}{
-		Id:    post.Id.Hex(),
-		Alias: (*Alias)(post),
-	})
 }
 
 func (post *Post) Validate() error {

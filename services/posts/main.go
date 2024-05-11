@@ -15,10 +15,15 @@ func main() {
 	postRepo := repositories.InitPostRepo(client)
 	postHanlder := handlers.InitPostHandler(postRepo)
 
+	commentHandler := handlers.InitCommentHandler(postRepo)
+
 	router := gin.Default()
 
 	postRouter := routes.InitPostsRouter(postHanlder, router)
 	postRouter.SetupRoutes()
+
+	commentRouter := routes.InitCommentRouter(commentHandler, router)
+	commentRouter.SetupRoutes()
 
 	router.Run(configs.Host + ":" + configs.Port)
 }
