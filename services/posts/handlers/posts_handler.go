@@ -133,3 +133,33 @@ func (handler *PostHandler) UpVotePost(ctx *gin.Context) {
 
 	handler.repo.UpVotePost(objectId, userId, ctx)
 }
+
+func (handler *PostHandler) DownVote(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid post id."})
+		return
+	}
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid post id."})
+		return
+	}
+
+	uId := ctx.Param("userId")
+	if uId == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid user id."})
+		return
+	}
+
+	userId, err := primitive.ObjectIDFromHex(uId)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid user id."})
+		return
+	}
+
+	handler.repo.DownVote(objectId, userId, ctx)
+}

@@ -128,7 +128,38 @@ func (repo *PostRepo) UpVotePost(id primitive.ObjectID, userId primitive.ObjectI
 		}
 		filter = bson.M{"_id": id}
 		if _, err := repo.collection.UpdateOne(c, filter, update); err != nil {
+			ctx.JSON(http.StatusOK, gin.H{"message": "Upvote removed."})
+		}
+	}
+}
+
+func (repo *PostRepo) DownVote(id primitive.ObjectID, userId primitive.ObjectID, ctx *gin.Context) {
+	c, cancel := context.WithTimeout((context.Background()), time.Second*5)
+	defer cancel()
+
+	filter := bson.M{"_id": id, "downVotedBy": userId}
+	var post models.Post
+
+	err := repo.collection.FindOne(c, filter).Decode(&post)
+	if err == mongo.ErrNoDocuments {
+		update := bson.M{"$inc": bson.M{"downVotes": 1},
+			"$push": bson.M{"downVotedBy": userId},
+		}
+
+		filter = bson.M{"_id": id}
+
+		if _, err := repo.collection.UpdateOne(c, filter, update); err != nil {
 			ctx.JSON(http.StatusOK, gin.H{"message": "Post downvoted successfully."})
+		}
+	} else {
+		update := bson.M{"$inc": bson.M{"downVotes": -1},
+			"$pull": bson.M{"downVotedBy": userId},
+		}
+
+		filter = bson.M{"_id": id}
+
+		if _, err := repo.collection.UpdateOne(c, filter, update); err != nil {
+			ctx.JSON(http.StatusOK, gin.H{"message": "Downvote removed."})
 		}
 	}
 }
