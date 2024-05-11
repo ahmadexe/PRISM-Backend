@@ -1,8 +1,6 @@
 package data
 
 import (
-	// "encoding/json"
-
 	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
