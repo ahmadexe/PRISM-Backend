@@ -24,5 +24,7 @@ func (r *PostsRouter) SetupRoutes() {
 		posts.GET("/posts/:id", r.postsHandler.GetPostById)
 		posts.GET("/posts", r.postsHandler.GetPosts)
 		posts.PUT("/posts/:id", r.postsHandler.UpdatePost)
+		posts.PUT("/posts/upvote/:id/:userId", r.postsHandler.UpVotePost)
+		posts.PUT("/posts/downvote/:id/:userId", r.postsHandler.DownVote)
 	}
 }

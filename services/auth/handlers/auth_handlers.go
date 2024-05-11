@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ahmadexe/prism-backend/services/auth/models"
+	"github.com/ahmadexe/prism-backend/services/auth/data"
 	"github.com/ahmadexe/prism-backend/services/auth/repositories"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -20,7 +20,7 @@ func InitAuthHandler(authRepo *repositories.AuthRepo) *AuthHandler {
 }
 
 func (handler *AuthHandler) AddUser(ctx *gin.Context) {
-	var user models.AuthData
+	var user data.AuthData
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
@@ -46,7 +46,7 @@ func (handler *AuthHandler) GetUserById(ctx *gin.Context) {
 }
 
 func (handler *AuthHandler) UpdateUser(ctx *gin.Context) {
-	var user models.AuthData
+	var user data.AuthData
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

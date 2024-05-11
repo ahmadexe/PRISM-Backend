@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ahmadexe/prism-backend/services/auth/models"
+	"github.com/ahmadexe/prism-backend/services/auth/data"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,7 +21,7 @@ func InitAuthRepo(client *mongo.Client) *AuthRepo {
 	return &AuthRepo{collection: collection}
 }
 
-func (repo *AuthRepo) AddUser(user models.AuthData, ctx *gin.Context) {
+func (repo *AuthRepo) AddUser(user data.AuthData, ctx *gin.Context) {
 	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -42,7 +42,7 @@ func (repo *AuthRepo) GetUserById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	filter := bson.M{"uid": id}
-	var user models.AuthData
+	var user data.AuthData
 
 	if err := repo.collection.FindOne(c, filter).Decode(&user); err != nil {
 		log.Println(err)
@@ -53,7 +53,7 @@ func (repo *AuthRepo) GetUserById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
-func (repo *AuthRepo) UpdateUser(user models.AuthData, ctx *gin.Context) {
+func (repo *AuthRepo) UpdateUser(user data.AuthData, ctx *gin.Context) {
 	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

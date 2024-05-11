@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
-	"github.com/ahmadexe/prism-backend/services/posts/models"
+	"github.com/ahmadexe/prism-backend/services/posts/data"
 	"github.com/ahmadexe/prism-backend/services/posts/repositories"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -18,14 +19,16 @@ func InitPostHandler(repo *repositories.PostRepo) *PostHandler {
 }
 
 func (handler *PostHandler) AddPost(ctx *gin.Context) {
-	var post models.Post
+	var post data.Post
 
 	if err := ctx.ShouldBindJSON(&post); err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
 		return
 	}
 
 	if err := post.Validate(); err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
 		return
 	}
@@ -77,7 +80,7 @@ func (handler *PostHandler) GetPosts(ctx *gin.Context) {
 }
 
 func (handler *PostHandler) UpdatePost(ctx *gin.Context) {
-	var post models.Post
+	var post data.Post
 
 	if err := ctx.ShouldBindJSON(&post); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
@@ -103,4 +106,63 @@ func (handler *PostHandler) UpdatePost(ctx *gin.Context) {
 	}
 
 	handler.repo.UpdatePost(objectId, post, ctx)
+}
+
+func (handler *PostHandler) UpVotePost(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid post id."})
+		return
+	}
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid post id."})
+		return
+	}
+
+	uId := ctx.Param("userId")
+	if uId == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid user id."})
+		return
+	}
+
+	userId, err := primitive.ObjectIDFromHex(uId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid user id."})
+		return
+	}
+
+	handler.repo.UpVotePost(objectId, userId, ctx)
+}
+
+func (handler *PostHandler) DownVote(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid post id."})
+		return
+	}
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid post id."})
+		return
+	}
+
+	uId := ctx.Param("userId")
+	if uId == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid user id."})
+		return
+	}
+
+	userId, err := primitive.ObjectIDFromHex(uId)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a valid user id."})
+		return
+	}
+
+	handler.repo.DownVote(objectId, userId, ctx)
 }
