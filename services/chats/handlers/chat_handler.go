@@ -3,20 +3,21 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/ahmadexe/prism-backend/services/chats/data"
 	"github.com/ahmadexe/prism-backend/services/chats/repository"
+	"github.com/ahmadexe/prism-backend/services/chats/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/redis/go-redis/v9"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ChatHandler struct {
-	repo *repository.ChatRepo
-	rdb  *redis.Client
+	repo    *repository.ChatRepo
+	rdb     *redis.Client
 	clients map[string]*websocket.Conn
 }
 
@@ -54,28 +55,52 @@ func (handler *ChatHandler) HandleConnections(ctx *gin.Context) {
 	defer conn.Close()
 
 	params := r.URL.Query()
-	id := params.Get("id")
-	handler.clients[id] = conn
+	id1 := params.Get("id1")
+	handler.clients[id1] = conn
+
+	id2 := params.Get("id2")
+
+	primitiveId1, err := primitive.ObjectIDFromHex(id1)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	primitiveId2, err := primitive.ObjectIDFromHex(id2)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	id := utils.SortIDs(primitiveId1, primitiveId2)
 
 	for {
 		var msg data.Message
 		err := conn.ReadJSON(&msg)
 		if err != nil {
+
 			fetch, _ := handler.rdb.Get(ctx, id).Result()
 
-			var message []data.Message
-			err = json.Unmarshal([]byte(fetch), &message)
+			var messages []data.Message
+			err = json.Unmarshal([]byte(fetch), &messages)
 			if err != nil {
 				log.Println("No messages found")
 			}
 
-			fmt.Println(message)
-			
+			handler.repo.PushBulkMessages(ctx, messages)
+
 			handler.rdb.Del(ctx, id)
 			delete(handler.clients, id)
 			return
 		}
 
+		msg.Id = primitive.NewObjectID()
+		er := msg.Validate()
+		if er != nil {
+			log.Println(er)
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
+			continue
+		}
 		broadcast <- msg
 	}
 }
@@ -84,20 +109,21 @@ func (handler *ChatHandler) HandleMessages() {
 	c := context.Background()
 	for {
 		msg := <-broadcast
-
-		client := handler.clients[msg.ReceiverId]
+		client := handler.clients[msg.ReceiverId.Hex()]
 		if client == nil {
 			continue
 		} else {
 			err := client.WriteJSON(msg)
 			if err != nil {
 				log.Println(err)
-				delete(handler.clients, msg.ReceiverId)
+				delete(handler.clients, msg.ReceiverId.Hex())
 			}
 
 			var allMessages []data.Message
 
-			prevMessages, er := handler.rdb.Get(c, msg.SenderId).Result()
+			ids := utils.SortIDs(msg.SenderId, msg.ReceiverId)
+
+			prevMessages, er := handler.rdb.Get(c, ids).Result()
 			if er != nil {
 				allMessages = append(allMessages, msg)
 			} else {
@@ -112,7 +138,27 @@ func (handler *ChatHandler) HandleMessages() {
 				log.Println(err)
 			}
 
-			handler.rdb.Set(c, msg.SenderId, messagesJson, 0)
+			handler.rdb.Set(c, ids, messagesJson, 0)
 		}
 	}
+}
+
+func (handler *ChatHandler) HandleConversation(ctx *gin.Context) {
+	var convo data.Conversation
+
+	if err := ctx.ShouldBindJSON(&convo); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
+		return
+	}
+
+	if err := convo.Validate(); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
+		return
+	}
+
+	convo.Id = primitive.NewObjectID()
+
+	handler.repo.CreateOrFetchConversation(ctx, convo)
 }
