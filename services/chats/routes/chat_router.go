@@ -24,5 +24,6 @@ func (r *ChatRouter) SetupRoutes() {
 				"message": "Welcome to Prism Chat Service",
 			})
 		})
+		chats.GET("/ws", r.chatHandler.HandleConnections)
 	}
 }

@@ -15,7 +15,7 @@ func main() {
 
 	repo := repository.InitChatRepo(client)
 	handler := handlers.InitChatHandler(repo)
-
+	go handler.HandleMessages()
 	router := gin.Default()
 
 	chatRouter := routes.InitChatRouter(handler, router)
