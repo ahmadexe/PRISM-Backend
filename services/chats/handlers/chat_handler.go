@@ -92,7 +92,7 @@ func (handler *ChatHandler) HandleConnections(ctx *gin.Context) {
 		if err != nil {
 
 			fetch, _ := handler.rdb.Get(ctx, id).Result()
-
+			log.Printf("Disconnected by: %s", id)
 			var messages []data.Message
 			err = json.Unmarshal([]byte(fetch), &messages)
 			if err != nil {
