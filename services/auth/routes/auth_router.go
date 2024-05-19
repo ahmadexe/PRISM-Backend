@@ -22,6 +22,7 @@ func (router *AuthRouter) SetupRoutes(app *firebase.App) {
 	{
 		auth.POST("/users", router.authHandler.AddUser)
 		auth.GET("/users/:id", router.authHandler.GetUserById)
+		auth.GET("/users/primitive/:id", router.authHandler.GetById)
 		auth.PUT("/users", router.authHandler.UpdateUser)
 	}
 }

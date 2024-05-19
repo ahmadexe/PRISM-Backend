@@ -9,6 +9,7 @@ import (
 	"github.com/ahmadexe/prism-backend/services/auth/data"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -42,6 +43,22 @@ func (repo *AuthRepo) GetUserById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	filter := bson.M{"uid": id}
+	var user data.AuthData
+
+	if err := repo.collection.FindOne(c, filter).Decode(&user); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, user)
+}
+
+func (repo *AuthRepo) GetById(id primitive.ObjectID ,ctx *gin.Context) {
+	c, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	filter := bson.M{"_id": id}
 	var user data.AuthData
 
 	if err := repo.collection.FindOne(c, filter).Decode(&user); err != nil {

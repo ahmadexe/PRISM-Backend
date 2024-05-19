@@ -73,6 +73,18 @@ func (handler *ChatHandler) HandleConnections(ctx *gin.Context) {
 	}
 
 	id := utils.SortIDs(primitiveId1, primitiveId2)
+	var msgs []data.Message
+	fetch, _ := handler.rdb.Get(ctx, id).Result()
+
+	err = json.Unmarshal([]byte(fetch), &msgs)
+	if err != nil {
+		log.Println("No messages found")
+	} else {
+		handler.repo.PushBulkMessages(ctx, msgs)
+
+		handler.rdb.Del(ctx, id)
+		delete(handler.clients, id)
+	}
 
 	for {
 		var msg data.Message
@@ -85,12 +97,13 @@ func (handler *ChatHandler) HandleConnections(ctx *gin.Context) {
 			err = json.Unmarshal([]byte(fetch), &messages)
 			if err != nil {
 				log.Println("No messages found")
+			} else {
+				handler.repo.PushBulkMessages(ctx, messages)
+
+				handler.rdb.Del(ctx, id)
+				delete(handler.clients, id)
 			}
 
-			handler.repo.PushBulkMessages(ctx, messages)
-
-			handler.rdb.Del(ctx, id)
-			delete(handler.clients, id)
 			return
 		}
 
@@ -109,14 +122,24 @@ func (handler *ChatHandler) HandleMessages() {
 	c := context.Background()
 	for {
 		msg := <-broadcast
-		client := handler.clients[msg.ReceiverId.Hex()]
-		if client == nil {
+		receiverClient := handler.clients[msg.ReceiverId.Hex()]
+		senderClient := handler.clients[msg.SenderId.Hex()]
+
+		if receiverClient == nil && senderClient == nil {
 			continue
 		} else {
-			err := client.WriteJSON(msg)
-			if err != nil {
-				log.Println(err)
-				delete(handler.clients, msg.ReceiverId.Hex())
+			if senderClient != nil {
+				err := senderClient.WriteJSON(msg)
+				if err != nil {
+					log.Println(err)
+					delete(handler.clients, msg.SenderId.Hex())
+				}
+			} else if receiverClient != nil {
+				e := receiverClient.WriteJSON(msg)
+				if e != nil {
+					log.Println(e)
+					delete(handler.clients, msg.ReceiverId.Hex())
+				}
 			}
 
 			var allMessages []data.Message
@@ -127,7 +150,7 @@ func (handler *ChatHandler) HandleMessages() {
 			if er != nil {
 				allMessages = append(allMessages, msg)
 			} else {
-				err = json.Unmarshal([]byte(prevMessages), &allMessages)
+				err := json.Unmarshal([]byte(prevMessages), &allMessages)
 				if err != nil {
 					log.Println(err)
 				}
