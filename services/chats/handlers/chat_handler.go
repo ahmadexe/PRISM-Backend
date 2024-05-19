@@ -185,3 +185,14 @@ func (handler *ChatHandler) HandleConversation(ctx *gin.Context) {
 
 	handler.repo.CreateOrFetchConversation(ctx, convo)
 }
+
+func (handler *ChatHandler) GetConversations(ctx *gin.Context) {
+	id := ctx.Param("id")
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	handler.repo.GetConversations(ctx, objectId)
+}

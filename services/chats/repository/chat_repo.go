@@ -22,10 +22,6 @@ func InitChatRepo(client *mongo.Client) *ChatRepo {
 	return &ChatRepo{conversationsCol: conversationsCol, messagesCol: messagesCol}
 }
 
-func (chatRepo *ChatRepo) GetConversations() {
-
-}
-
 func (chatRepo *ChatRepo) CreateOrFetchConversation(ctx *gin.Context, convo data.Conversation) {
 	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -45,7 +41,7 @@ func (chatRepo *ChatRepo) CreateOrFetchConversation(ctx *gin.Context, convo data
 		convo.Id = primitive.NewObjectID()
 
 		chatRepo.conversationsCol.InsertOne(c, convo)
-		
+
 		ctx.JSON(200, gin.H{"message": "Conversation created successfully.", "new": true, "conversation": convo})
 	} else {
 		convoId := existingConvo.Id
@@ -70,24 +66,49 @@ func (chatRepo *ChatRepo) CreateOrFetchConversation(ctx *gin.Context, convo data
 func (chatRepo *ChatRepo) PushBulkMessages(ctx *gin.Context, messages []data.Message) {
 	c := context.Background()
 
-	var docs []interface{}
-	for _, message := range messages {
-		docs = append(docs, message)
+	go func() {
+		var docs []interface{}
+		for _, message := range messages {
+			docs = append(docs, message)
+		}
+		_, err := chatRepo.messagesCol.InsertMany(c, docs)
+		if err != nil {
+			ctx.JSON(500, gin.H{"error": "Error adding messages."})
+			return
+		}
+	}()
+
+	// _, err := chatRepo.messagesCol.InsertMany(c, docs)
+	// if err != nil {
+	// 	ctx.JSON(500, gin.H{"error": "Error adding messages."})
+	// 	return
+	// }
+
+	ctx.JSON(200, gin.H{"message": "Messages added successfully."})
+}
+
+func (chatRepo *ChatRepo) GetConversations(ctx *gin.Context, userId primitive.ObjectID) {
+	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{
+		"$or": []bson.M{
+			{"user1Id": userId},
+			{"user2Id": userId},
+		},
 	}
 
-	// go func() {
-	// 	_, err := chatRepo.messagesCol.InsertMany(c, docs)
-	// 	if err != nil {
-	// 		ctx.JSON(500, gin.H{"error": "Error adding messages."})
-	// 		return
-	// 	}
-	// } ()
-
-	_, err := chatRepo.messagesCol.InsertMany(c, docs)
+	cursor, err := chatRepo.conversationsCol.Find(c, filter)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": "Error adding messages."})
+		ctx.JSON(500, gin.H{"error": "Error fetching conversations."})
 		return
 	}
 
-	ctx.JSON(200, gin.H{"message": "Messages added successfully."})
+	var conversations []data.Conversation
+	if err = cursor.All(c, &conversations); err != nil {
+		ctx.JSON(500, gin.H{"error": "Error fetching conversations."})
+		return
+	}
+
+	ctx.JSON(200, gin.H{"conversations": conversations})
 }

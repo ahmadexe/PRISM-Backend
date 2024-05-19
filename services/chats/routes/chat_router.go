@@ -1,15 +1,14 @@
 package routes
 
 import (
-	"net/http"
-
 	"github.com/ahmadexe/prism-backend/services/chats/handlers"
+	"github.com/ahmadexe/prism-backend/services/chats/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
 type ChatRouter struct {
 	chatHandler *handlers.ChatHandler
-	router 	   *gin.Engine
+	router      *gin.Engine
 }
 
 func InitChatRouter(chatHandler *handlers.ChatHandler, r *gin.Engine) *ChatRouter {
@@ -19,13 +18,8 @@ func InitChatRouter(chatHandler *handlers.ChatHandler, r *gin.Engine) *ChatRoute
 func (r *ChatRouter) SetupRoutes() {
 	chats := r.router.Group("/v1")
 	{
-		chats.GET("/", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK, gin.H{
-				"message": "Welcome to Prism Chat Service",
-			})
-		})
 		chats.GET("/chats/ws", r.chatHandler.HandleConnections)
-		chats.POST("/chats/convo", r.chatHandler.HandleConversation)
-		// chats.GET("/chats/convo", r.chatHandler.GetConversations)
+		chats.POST("/chats/convo", middlewares.VerifyUser, r.chatHandler.HandleConversation)
+		chats.GET("/chats/convo/:id", middlewares.VerifyUser, r.chatHandler.GetConversations)
 	}
 }
