@@ -7,6 +7,7 @@ import (
 	"github.com/ahmadexe/prism-backend/services/chats/data"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -31,12 +32,20 @@ func (chatRepo *ChatRepo) CreateOrFetchConversation(ctx *gin.Context, convo data
 	user1id := convo.User1Id
 	user2id := convo.User2Id
 
-	filter := bson.M{"user1Id": user1id, "user2Id": user2id}
+	filter := bson.M{
+		"$or": []bson.M{
+			{"user1Id": user1id, "user2Id": user2id},
+			{"user1Id": user2id, "user2Id": user1id},
+		},
+	}
 
 	var existingConvo data.Conversation
 	err := chatRepo.conversationsCol.FindOne(c, filter).Decode(&existingConvo)
 	if err == mongo.ErrNoDocuments {
+		convo.Id = primitive.NewObjectID()
+
 		chatRepo.conversationsCol.InsertOne(c, convo)
+		
 		ctx.JSON(200, gin.H{"message": "Conversation created successfully.", "new": true, "conversation": convo})
 	} else {
 		convoId := existingConvo.Id

@@ -181,7 +181,5 @@ func (handler *ChatHandler) HandleConversation(ctx *gin.Context) {
 		return
 	}
 
-	convo.Id = primitive.NewObjectID()
-
 	handler.repo.CreateOrFetchConversation(ctx, convo)
 }
