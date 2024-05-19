@@ -45,6 +45,17 @@ func (handler *AuthHandler) GetUserById(ctx *gin.Context) {
 	handler.authRepo.GetUserById(ctx)
 }
 
+func (handler *AuthHandler) GetById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	handler.authRepo.GetById(objectId, ctx)
+}
+
 func (handler *AuthHandler) UpdateUser(ctx *gin.Context) {
 	var user data.AuthData
 	if err := ctx.ShouldBindJSON(&user); err != nil {
