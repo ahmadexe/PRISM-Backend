@@ -134,7 +134,9 @@ func (handler *ChatHandler) HandleMessages() {
 					log.Println(err)
 					delete(handler.clients, msg.SenderId.Hex())
 				}
-			} else if receiverClient != nil {
+			}
+
+			if receiverClient != nil {
 				e := receiverClient.WriteJSON(msg)
 				if e != nil {
 					log.Println(e)
