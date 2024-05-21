@@ -297,3 +297,21 @@ func (repo *PostRepo) DeleteComment(id primitive.ObjectID, postId primitive.Obje
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully."})
 }
+
+func (repo *PostRepo) ReportPost(id primitive.ObjectID, ctx *gin.Context) {
+	c, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	filter := bson.M{"_id": id}
+	update := bson.M{"$inc": bson.M{"totalReports": 1}}
+
+	var post data.Post
+
+	if err := repo.postCollection.FindOneAndUpdate(c, filter, update).Decode(&post); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error reporting post. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Post reported successfully."})
+}

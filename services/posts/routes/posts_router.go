@@ -26,5 +26,6 @@ func (r *PostsRouter) SetupRoutes() {
 		posts.PUT("/posts/:id", r.postsHandler.UpdatePost)
 		posts.PUT("/posts/upvote/:id/:userId", r.postsHandler.UpVotePost)
 		posts.PUT("/posts/downvote/:id/:userId", r.postsHandler.DownVote)
+		posts.PUT("/posts/report/:id", r.postsHandler.ReportPost)
 	}
 }
