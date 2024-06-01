@@ -3,7 +3,6 @@ package repositories
 import (
 	"context"
 	"fmt"
-	// "io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -323,23 +322,8 @@ func (repo *PostRepo) ReportPost(id primitive.ObjectID, ctx *gin.Context) {
 		}
 
 		defer response.Body.Close()
-
-		// responseData, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			log.Println(err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error reporting post. Please try again later."})
-			return
-		}
-
-		
-		
 		filter = bson.M{"_id": id}
-		// _, err := repo.postCollection.DeleteOne(c, filter)
-		if err != nil {
-			log.Println(err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error deleting post. Please try again later."})
-			return
-		}
+
 		ctx.JSON(http.StatusOK, gin.H{"message": "Post deleted successfully."})
 		return
 	}

@@ -78,12 +78,6 @@ func (chatRepo *ChatRepo) PushBulkMessages(ctx *gin.Context, messages []data.Mes
 		}
 	}()
 
-	// _, err := chatRepo.messagesCol.InsertMany(c, docs)
-	// if err != nil {
-	// 	ctx.JSON(500, gin.H{"error": "Error adding messages."})
-	// 	return
-	// }
-
 	ctx.JSON(200, gin.H{"message": "Messages added successfully."})
 }
 
