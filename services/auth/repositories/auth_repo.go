@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"golang.org/x/exp/slices"
+
 	"github.com/ahmadexe/prism-backend/services/auth/data"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -54,7 +56,7 @@ func (repo *AuthRepo) GetUserById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
-func (repo *AuthRepo) GetById(id primitive.ObjectID ,ctx *gin.Context) {
+func (repo *AuthRepo) GetById(id primitive.ObjectID, ctx *gin.Context) {
 	c, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -84,4 +86,58 @@ func (repo *AuthRepo) UpdateUser(user data.AuthData, ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+}
+
+func (repo *AuthRepo) ToggleFollow(req data.FollowRequest, ctx *gin.Context) {
+	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": req.From}
+	var fromUser data.AuthData
+
+	if err := repo.collection.FindOne(c, filter).Decode(&fromUser); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	if slices.Contains(fromUser.Following, req.To) {
+		update := bson.M{"$pull": bson.M{"following": req.To}}
+		update2 := bson.M{"$pull": bson.M{"followers": req.From}}
+
+		filter2 := bson.M{"_id": req.To}
+
+		if _, err := repo.collection.UpdateOne(c, filter, update); err != nil {
+			log.Println(err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating user in database. Please try again later."})
+			return
+		}
+
+		if _, err := repo.collection.UpdateOne(c, filter2, update2); err != nil {
+			log.Println(err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating user in database. Please try again later."})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{"message": "User unfollowed successfully."})
+	} else {
+		update := bson.M{"$push": bson.M{"following": req.To}}
+		update2 := bson.M{"$push": bson.M{"followers": req.From}}
+
+		filter2 := bson.M{"_id": req.To}
+
+		if _, err := repo.collection.UpdateOne(c, filter, update); err != nil {
+			log.Println(err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating user in database. Please try again later."})
+			return
+		}
+
+		if _, err := repo.collection.UpdateOne(c, filter2, update2); err != nil {
+			log.Println(err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating user in database. Please try again later."})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{"message": "User followed successfully."})
+	}
 }
