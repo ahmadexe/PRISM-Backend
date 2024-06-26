@@ -35,8 +35,8 @@ func (handler *AuthHandler) AddUser(ctx *gin.Context) {
 
 	user.CreatedAt = time.Now().UnixMicro()
 	user.Id = primitive.NewObjectID()
-	user.Followers = []string{}
-	user.Following = []string{}
+	user.Followers = []primitive.ObjectID{}
+	user.Following = []primitive.ObjectID{}
 
 	handler.authRepo.AddUser(user, ctx)
 }
@@ -71,4 +71,22 @@ func (handler *AuthHandler) UpdateUser(ctx *gin.Context) {
 	}
 
 	handler.authRepo.UpdateUser(user, ctx)
+}
+
+func (handler *AuthHandler) ToggleFollowRequest(ctx *gin.Context) {
+	var followReq data.FollowRequest
+
+	if err := ctx.ShouldBindJSON(&followReq); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Request"})
+		return
+	}
+
+	if err := followReq.Validate(); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	handler.authRepo.ToggleFollow(followReq, ctx)
 }
