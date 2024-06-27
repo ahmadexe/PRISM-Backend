@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -16,7 +15,6 @@ import (
 type SearchHandler struct {
 	repo    *repositories.AuthRepo
 	rdb     *redis.Client
-	clients map[string]*websocket.Conn
 }
 
 var broadcast chan data.SearchRequest
@@ -27,6 +25,8 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+var clients = make(map[string]*websocket.Conn)
+
 func InitSearchHandler(repo *repositories.AuthRepo) *SearchHandler {
 	broadcast = make(chan data.SearchRequest)
 
@@ -35,11 +35,10 @@ func InitSearchHandler(repo *repositories.AuthRepo) *SearchHandler {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
-
-	clients := make(map[string]*websocket.Conn)
-
-	return &SearchHandler{repo: repo, rdb: rdb, clients: clients}
+	
+	return &SearchHandler{repo: repo, rdb: rdb}
 }
+
 
 func (handler *SearchHandler) HandleConnections(ctx *gin.Context) {
 	w := ctx.Writer
@@ -53,16 +52,15 @@ func (handler *SearchHandler) HandleConnections(ctx *gin.Context) {
 	defer conn.Close()
 
 	id := ctx.Param("id")
-	fmt.Println("HERE 6")
-	handler.clients[id] = conn
-	fmt.Println("HERE 7")
+
+	clients[id] = conn
 
 	for {
 		var msg data.SearchRequest
 		err := conn.ReadJSON(&msg)
 		if err != nil {
 			log.Println(err)
-			delete(handler.clients, id)
+			delete(clients, id)
 			break
 		}
 
@@ -73,7 +71,7 @@ func (handler *SearchHandler) HandleConnections(ctx *gin.Context) {
 func (handler *SearchHandler) HandleSearch() {
 	for {
 		msg := <-broadcast
-		client := handler.clients[msg.Id.Hex()]
+		client := clients[msg.Id.Hex()]
 
 		if client == nil {
 			continue
@@ -92,7 +90,7 @@ func (handler *SearchHandler) HandleSearch() {
 		if err != nil {
 			log.Println(err)
 			client.Close()
-			delete(handler.clients, msg.Id.Hex())
+			delete(clients, msg.Id.Hex())
 		}
 	}
 }
