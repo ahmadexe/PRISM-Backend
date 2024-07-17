@@ -9,6 +9,7 @@ import (
 	"github.com/ahmadexe/prism-backend/services/auth/handlers"
 	"github.com/ahmadexe/prism-backend/services/auth/repositories"
 	"github.com/ahmadexe/prism-backend/services/auth/routes"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/api/option"
 )
@@ -32,7 +33,7 @@ func main() {
 
 	authRouter := routes.InitAuthRouter(authHanler, searchHandler, router)
 	authRouter.SetupRoutes(app)
-
+	router.Use(cors.Default())
 	router.Run(configs.Host + ":" + configs.Port)
 
 	defer func() {

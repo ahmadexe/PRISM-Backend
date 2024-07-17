@@ -5,6 +5,7 @@ import (
 	"github.com/ahmadexe/prism-backend/services/chats/handlers"
 	"github.com/ahmadexe/prism-backend/services/chats/repository"
 	"github.com/ahmadexe/prism-backend/services/chats/routes"
+	"github.com/gin-contrib/cors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,6 +22,7 @@ func main() {
 
 	chatRouter := routes.InitChatRouter(handler, router)
 	chatRouter.SetupRoutes()
+	router.Use(cors.Default())
 
 	router.Run(configs.Host + ":" + configs.Port)
 }
