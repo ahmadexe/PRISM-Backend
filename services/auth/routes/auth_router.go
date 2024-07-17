@@ -3,7 +3,7 @@ package routes
 import (
 	firebase "firebase.google.com/go"
 	"github.com/ahmadexe/prism-backend/services/auth/handlers"
-	// "github.com/ahmadexe/prism-backend/services/auth/middlewares"
+	"github.com/ahmadexe/prism-backend/services/auth/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +19,7 @@ func InitAuthRouter(authHandler *handlers.AuthHandler, searchHandler *handlers.S
 
 func (router *AuthRouter) SetupRoutes(app *firebase.App) {
 	auth := router.router.Group("/v1")
-	// auth.Use(middlewares.VerifyUser)
+	auth.Use(middlewares.VerifyUser)
 	{
 		auth.POST("/users", router.authHandler.AddUser)
 		auth.GET("/users/:id", router.authHandler.GetUserByUid)
