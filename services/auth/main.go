@@ -23,13 +23,16 @@ func main() {
 	configs := configs.InitConfigs()
 	client := configs.SetupDB()
 	authRepo := repositories.InitAuthRepo(client)
+	searchHandler := handlers.InitSearchHandler(authRepo)
 	authHanler := handlers.InitAuthHandler(authRepo)
 
+	go searchHandler.HandleSearch()
+	gin.SetMode(configs.Mode)
 	router := gin.Default()
 
-	authRouter := routes.InitAuthRouter(authHanler, router)
+	authRouter := routes.InitAuthRouter(authHanler, searchHandler, router)
 	authRouter.SetupRoutes(app)
-	
+
 	router.Run(configs.Host + ":" + configs.Port)
 
 	defer func() {

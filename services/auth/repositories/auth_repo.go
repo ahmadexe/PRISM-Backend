@@ -141,3 +141,22 @@ func (repo *AuthRepo) ToggleFollow(req data.FollowRequest, ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"message": "User followed successfully."})
 	}
 }
+
+func (repo *AuthRepo) GetUserBySubString(sub string) ([]data.AuthData, error) {
+	c, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	filter := bson.M{"fullname": primitive.Regex{Pattern: sub, Options: "i"}}
+	var users []data.AuthData
+
+	cursor, err := repo.collection.Find(c, filter)
+	if err != nil {
+		return []data.AuthData{}, err
+	}
+
+	if err := cursor.All(c, &users); err != nil {
+		return []data.AuthData{}, err
+	}
+
+	return users, nil
+}

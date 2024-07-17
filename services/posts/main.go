@@ -17,6 +17,7 @@ func main() {
 
 	commentHandler := handlers.InitCommentHandler(postRepo)
 
+	gin.SetMode(configs.Mode)
 	router := gin.Default()
 
 	postRouter := routes.InitPostsRouter(postHanlder, router)
