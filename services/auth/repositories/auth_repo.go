@@ -146,7 +146,7 @@ func (repo *AuthRepo) GetUserBySubString(sub string) ([]data.AuthData, error) {
 	c, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	filter := bson.M{"username": primitive.Regex{Pattern: sub, Options: "i"}}
+	filter := bson.M{"fullname": primitive.Regex{Pattern: sub, Options: "i"}}
 	var users []data.AuthData
 
 	cursor, err := repo.collection.Find(c, filter)
