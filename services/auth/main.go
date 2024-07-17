@@ -27,6 +27,7 @@ func main() {
 	authHanler := handlers.InitAuthHandler(authRepo)
 
 	go searchHandler.HandleSearch()
+	gin.SetMode(configs.Mode)
 	router := gin.Default()
 
 	authRouter := routes.InitAuthRouter(authHanler, searchHandler, router)

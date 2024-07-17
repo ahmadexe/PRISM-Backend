@@ -12,12 +12,13 @@ type Configs struct {
 	Port  string
 	Host  string
 	DbUri string
+	Mode string
 }
 
 func InitConfigs() *Configs {
-	port, host, dbUri := readEnv()
+	port, host, dbUri, mode := readEnv()
 
-	configs := &Configs{Port: port, Host: host, DbUri: dbUri}
+	configs := &Configs{Port: port, Host: host, DbUri: dbUri, Mode: mode}
 	return configs
 }
 
@@ -31,7 +32,7 @@ func (configs *Configs) SetupDB() *mongo.Client {
 	return client
 }
 
-func readEnv() (string, string, string) {
+func readEnv() (string, string, string, string) {
 	viper.AddConfigPath("./configs")
 	viper.SetConfigName("configs")
 	viper.SetConfigType("json")
@@ -43,6 +44,7 @@ func readEnv() (string, string, string) {
 	port := viper.GetString("dev.port")
 	host := viper.GetString("dev.host")
 	dbUri := viper.GetString("dev.dbUri")
+	mode := viper.GetString("dev.mode")
 
-	return port, host, dbUri
+	return port, host, dbUri, mode
 }
