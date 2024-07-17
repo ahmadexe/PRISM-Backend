@@ -5,6 +5,7 @@ import (
 	"github.com/ahmadexe/prism-backend/services/posts/handlers"
 	"github.com/ahmadexe/prism-backend/services/posts/repositories"
 	"github.com/ahmadexe/prism-backend/services/posts/routes"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,6 +26,7 @@ func main() {
 
 	commentRouter := routes.InitCommentRouter(commentHandler, router)
 	commentRouter.SetupRoutes()
-
+	
+	router.Use(cors.Default())
 	router.Run(configs.Host + ":" + configs.Port)
 }
