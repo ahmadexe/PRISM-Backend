@@ -90,3 +90,17 @@ func (handler *AuthHandler) ToggleFollowRequest(ctx *gin.Context) {
 
 	handler.authRepo.ToggleFollow(followReq, ctx)
 }
+
+
+func (handler *AuthHandler) ToggleIsServiceProvider(ctx *gin.Context) {
+	id := ctx.Param("id")
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	handler.authRepo.ToggleIsServiceProvider(objectId, ctx)
+}
