@@ -183,5 +183,7 @@ func (repo *AuthRepo) ToggleIsServiceProvider (id primitive.ObjectID, ctx *gin.C
 		return
 	}
 
+	user.IsServiceProvider = !user.IsServiceProvider
+
 	ctx.JSON(http.StatusOK, gin.H{"message": "User is updated.", "data": user})
 }
