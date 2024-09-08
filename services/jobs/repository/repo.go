@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/ahmadexe/prism-backend/services/jobs/data"
@@ -26,6 +27,7 @@ func (jr *JobsRepo) CreateJob(ctx *gin.Context,job *data.Job) {
 
 	_, err := jr.jobsCollection.InsertOne(context, job)
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(500, gin.H{"error": "Internal server error. Please try again later."})
 		return
 	}
@@ -37,14 +39,16 @@ func (jr *JobsRepo) GetJobs(ctx *gin.Context) {
 	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	cursor, err := jr.jobsCollection.Find(context, nil)
+	cursor, err := jr.jobsCollection.Find(context, bson.M{})
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(500, gin.H{"error": "Internal server error. Please try again later."})
 		return
 	}
 
 	var jobs []data.Job
 	if err = cursor.All(context, &jobs); err != nil {
+		log.Println(err)
 		ctx.JSON(500, gin.H{"error": "Internal server error. Please try again later."})
 		return
 	}
@@ -57,8 +61,10 @@ func (jr *JobsRepo) GetJob(ctx *gin.Context, id primitive.ObjectID) {
 	defer cancel()
 
 	var job data.Job
-	err := jr.jobsCollection.FindOne(context, id).Decode(&job)
+
+	err := jr.jobsCollection.FindOne(context, bson.M{"_id":id}).Decode(&job)
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(500, gin.H{"error": "Internal server error. Please try again later."})
 		return
 	}
@@ -101,25 +107,28 @@ func (jr *JobsRepo) ToggleLikeOnJob(ctx *gin.Context, id primitive.ObjectID, use
 	err := jr.jobsCollection.FindOne(context, filter).Decode(&job)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			_, err = jr.jobsCollection.UpdateOne(context, bson.M{"_id": id}, bson.M{"$pull": bson.M{"likedBy": userId}})
+			_, err = jr.jobsCollection.UpdateOne(context, bson.M{"_id": id}, bson.M{"$push": bson.M{"likedBy": userId}})
 			if err != nil {
+				log.Println(err)
 				ctx.JSON(500, gin.H{"error": "Internal server error. Please try again later."})
 				return
 			}
-			ctx.JSON(200, gin.H{"message": "Job unliked successfully."})
+			ctx.JSON(200, gin.H{"message": "Job liked successfully."})
 			return
 		}
+		log.Println(err)
 		ctx.JSON(500, gin.H{"error": "Internal server error. Please try again later."})
 		return
 	}
 
-	_, err = jr.jobsCollection.UpdateOne(context, bson.M{"_id": id}, bson.M{"$push": bson.M{"likedBy": userId}})
+	_, err = jr.jobsCollection.UpdateOne(context, bson.M{"_id": id}, bson.M{"$pull": bson.M{"likedBy": userId}})
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(500, gin.H{"error": "Internal server error. Please try again later."})
 		return
 	}
 
-	ctx.JSON(200, gin.H{"message": "Job liked successfully."})
+	ctx.JSON(200, gin.H{"message": "Job unliked successfully."})
 }
 
 func (jr *JobsRepo) ApplyForJob(ctx *gin.Context, id primitive.ObjectID, userId primitive.ObjectID) {

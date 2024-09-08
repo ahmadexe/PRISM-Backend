@@ -27,6 +27,12 @@ func (jh *JobsHandler) CreateJob(ctx *gin.Context) {
 		return
 	}
 
+	id := primitive.NewObjectID()
+	job.ID = id
+
+	job.AppliedBy = []primitive.ObjectID{}
+	job.LikedBy = []primitive.ObjectID{}
+
 	jh.repo.CreateJob(ctx, &job)
 }
 
