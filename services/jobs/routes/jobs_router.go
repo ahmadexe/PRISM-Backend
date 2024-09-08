@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/ahmadexe/prism-backend/services/jobs/handlers"
+	"github.com/ahmadexe/prism-backend/services/jobs/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +17,7 @@ func InitJobsRouter(jobsHandler *handlers.JobsHandler, router *gin.Engine) *Jobs
 
 func (router *JobsRouter) SetupRoutes() {
 	jobs := router.router.Group("/v1")
+	jobs.Use(middlewares.VerifyUser)
 	{
 		jobs.GET("/", func(ctx *gin.Context) {
 			ctx.JSON(200, gin.H{"message": "Welcome to Prism Jobs Service"})
