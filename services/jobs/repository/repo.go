@@ -159,7 +159,9 @@ func (jr *JobsRepo) HireForJob(ctx *gin.Context, id primitive.ObjectID, userId p
 	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := jr.jobsCollection.UpdateOne(context, bson.M{"_id": id}, bson.M{"$set": bson.M{"hired": userId}})
+	time := time.Now().UnixMicro()
+
+	_, err := jr.jobsCollection.UpdateOne(context, bson.M{"_id": id}, bson.M{"$set": bson.M{"hired": userId, "hiredAt": time}})
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": "Internal server error. Please try again later."})
 		return
