@@ -20,10 +20,13 @@ func main()  {
 	handler := handlers.InitJobHandler(jobsRepo)
 
 	router := gin.Default()
+	router.Use(cors.Default())
+	
+	gin.SetMode(configs.Mode)
+
 	jobsRouter := routes.InitJobsRouter(handler, router)
 	jobsRouter.SetupRoutes()
 
-	router.Use(cors.Default())
 	router.Run(configs.Host + ":" + configs.Port)
 
 	defer func() {
