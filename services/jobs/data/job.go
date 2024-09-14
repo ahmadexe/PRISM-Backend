@@ -10,7 +10,7 @@ type Job struct {
 	PostedBy    primitive.ObjectID   `json:"postedBy" bson:"postedBy" validate:"required"`
 	Title       string               `json:"title" bson:"title" validate:"required"`
 	Description string               `json:"description" bson:"description" validate:"required"`
-	PostedAt    int32                `json:"postedAt" bson:"postedAt" validate:"required"`
+	PostedAt    int64                `json:"postedAt" bson:"postedAt" validate:"required"`
 	Country     string               `json:"country" bson:"country" validate:"required"`
 	Keywords    []string             `json:"keywords" bson:"keywords" validate:"required"`
 	LikedBy     []primitive.ObjectID `json:"likedBy" bson:"likedBy"`
