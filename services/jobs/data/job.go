@@ -17,7 +17,7 @@ type Job struct {
 	AppliedBy   []primitive.ObjectID `json:"appliedBy" bson:"appliedBy"`
 	Hired       *primitive.ObjectID  `json:"hired" bson:"hired"`
 	HiredAt     int64                `json:"hiredAt" bson:"hiredAt"`
-	Budget      float32              `json:"budget" bson:"budget" validate:"required"`
+	Budget      float64              `json:"budget" bson:"budget" validate:"required"`
 	BudgetMeta  string               `json:"budgetMeta" bson:"budgetMeta" validate:"required"`
 	Username    string               `json:"username" bson:"username" validate:"required"`
 	Avatar      string               `json:"avatar" bson:"avatar"`
