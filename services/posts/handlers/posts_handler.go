@@ -38,6 +38,14 @@ func (handler *PostHandler) AddPost(ctx *gin.Context) {
 	post.DownVotedBy = []string{}
 	post.CommentedBy = []string{}
 
+	m := make(map[string]int)
+	m["nsfw"] = 0
+	m["gore"] = 0
+	m["offensive"] = 0
+	m["text"] = 0
+
+	post.ReportsRecord = m
+
 	handler.repo.AddPost(post, ctx)
 }
 
@@ -165,4 +173,20 @@ func (handler *PostHandler) DownVote(ctx *gin.Context) {
 	}
 
 	handler.repo.DownVote(objectId, userId, ctx)
+}
+
+func (handler *PostHandler) ReportPost(ctx *gin.Context) {
+	var report data.ReportRequest
+
+	if err := ctx.ShouldBindJSON(&report); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
+		return
+	}
+
+	if err := report.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid data."})
+		return
+	}
+
+	handler.repo.Report(ctx, report)
 }

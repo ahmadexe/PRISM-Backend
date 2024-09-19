@@ -297,3 +297,37 @@ func (repo *PostRepo) DeleteComment(id primitive.ObjectID, postId primitive.Obje
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully."})
 }
+
+func (repo *PostRepo) Report(ctx *gin.Context, req data.ReportRequest) {
+	c, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	filter := bson.M{"_id": req.PostId}
+	update := bson.M{"$inc": bson.M{"reportsRecord." + req.Type: 1, "totalReports": 1}}
+
+	if _, err := repo.postCollection.UpdateOne(c, filter, update); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error reporting post. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Post reported successfully."})
+
+	go func() {
+		fmt.Println("Checking if post is to be banned")
+		c, cancel := context.WithTimeout(context.Background(), time.Second*5)
+		defer cancel()
+		var post data.Post
+		if err := repo.postCollection.FindOne(c, filter).Decode(&post); err != nil {
+			log.Println(err)
+		}
+		fmt.Println(post)
+		if post.TotalReports >= 4 {
+			update = bson.M{"$set": bson.M{"isBanned": true}}
+			if _, err := repo.postCollection.UpdateOne(c, filter, update); err != nil {
+				log.Println(err)
+			}
+		}
+	}()
+
+}
