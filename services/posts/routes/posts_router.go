@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/ahmadexe/prism-backend/services/posts/handlers"
-	// "github.com/ahmadexe/prism-backend/services/posts/middlewares"
+	"github.com/ahmadexe/prism-backend/services/posts/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,7 +17,7 @@ func InitPostsRouter(postsHandler *handlers.PostHandler, router *gin.Engine) *Po
 
 func (r *PostsRouter) SetupRoutes() {
 	posts := r.router.Group("/v1")
-	// posts.Use(middlewares.VerifyUser)
+	posts.Use(middlewares.VerifyUser)
 	{
 		posts.POST("/posts", r.postsHandler.AddPost)
 		posts.DELETE("/posts/:id", r.postsHandler.DeletePost)
