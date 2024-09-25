@@ -2,12 +2,14 @@ package repositories
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/ahmadexe/prism-backend/services/posts/data"
+	"github.com/ahmadexe/prism-backend/services/posts/network"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -297,3 +299,57 @@ func (repo *PostRepo) DeleteComment(id primitive.ObjectID, postId primitive.Obje
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully."})
 }
+
+func (repo *PostRepo) Report(ctx *gin.Context, req data.ReportRequest) {
+	c, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	filter := bson.M{"_id": req.PostId}
+	update := bson.M{"$inc": bson.M{"reportsRecord." + req.Type: 1, "totalReports": 1}}
+
+	if _, err := repo.postCollection.UpdateOne(c, filter, update); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error reporting post. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Post reported successfully."})
+
+	go func() {
+		c, cancel := context.WithTimeout(context.Background(), time.Minute * 5)
+		defer cancel()
+		var post data.Post
+		if err := repo.postCollection.FindOne(c, filter).Decode(&post); err != nil {
+			log.Println(err)
+		}
+		if post.TotalReports >= 4 {
+			max := -1
+			highestReports := ""
+			for key, value := range post.ReportsRecord {
+				if value >= max {
+					max = value
+					highestReports = key
+				}
+			}
+			
+			req := map[string]interface{}{
+				"url": post.ImageUrl,
+				"post_id": 1,
+			}
+
+			reqRaw, err := json.Marshal(req) 
+			if (err != nil) {
+				log.Print(err)
+			} 
+
+			res := network.PostReq("https://prism-ml-5lyi.onrender.com/mod/image/"+highestReports, reqRaw)
+			if (res["moderate"] == true) {
+				update = bson.M{"$set": bson.M{"isBanned": true}}
+				if _, err := repo.postCollection.UpdateOne(c, filter, update); err != nil {
+					log.Println(err)
+				}
+			} 
+		}
+	}()
+}
+

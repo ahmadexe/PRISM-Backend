@@ -24,6 +24,7 @@ type Post struct {
 	IsBanned       bool               `json:"isBanned" bson:"isBanned"`
 	TotalReports   int                `json:"totalReports" bson:"totalReports"`
 	CreatedAt      int64              `json:"createdAt" bson:"createdAt" validate:"required"`
+	ReportsRecord   map[string]int     `json:"reportsRecord" bson:"reportsRecord"`
 }
 
 func (post *Post) Validate() error {
