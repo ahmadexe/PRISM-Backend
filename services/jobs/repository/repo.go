@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/ahmadexe/prism-backend/services/jobs/data"
@@ -168,4 +169,70 @@ func (jr *JobsRepo) HireForJob(ctx *gin.Context, id primitive.ObjectID, userId p
 	}
 
 	ctx.JSON(200, gin.H{"message": "User hired successfully."})
+}
+
+func (jr *JobsRepo) JobsByMe(ctx *gin.Context, id primitive.ObjectID) {
+	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := jr.jobsCollection.Find(context, bson.M{"postedBy": id})
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	var jobs []data.Job
+
+	if err = cursor.All(context, &jobs); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": jobs})
+}
+
+func (jr *JobsRepo) JobsLikedByMe(ctx *gin.Context, id primitive.ObjectID) {
+	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := jr.jobsCollection.Find(context, bson.M{"likedBy": id})
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	var jobs []data.Job
+
+	if err = cursor.All(context, &jobs); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": jobs})
+}
+
+func (jr *JobsRepo) JobsAppliedByMe(ctx *gin.Context, id primitive.ObjectID) {
+	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := jr.jobsCollection.Find(context, bson.M{"appliedBy": id})
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	var jobs []data.Job
+
+	if err = cursor.All(context, &jobs); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": jobs})
 }
