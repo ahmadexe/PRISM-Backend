@@ -121,3 +121,25 @@ func (jh *JobsHandler) DeleteJob(ctx *gin.Context) {
 
 	jh.repo.DeleteJob(ctx, id)
 }
+
+func (jh *JobsHandler) JobsLikedByMe(ctx *gin.Context) {
+	userIdRaw := ctx.Param("id")
+	userId, err := primitive.ObjectIDFromHex(userIdRaw)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid id"})
+		return
+	}
+
+	jh.repo.JobsLikedByMe(ctx, userId)
+}
+
+func (jh *JobsHandler) JobsAppliedByMe(ctx *gin.Context) {
+	userIdRaw := ctx.Param("id")
+	userId, err := primitive.ObjectIDFromHex(userIdRaw)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid id"})
+		return
+	}
+
+	jh.repo.JobsAppliedByMe(ctx, userId)
+}
