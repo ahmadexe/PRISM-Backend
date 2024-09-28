@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/ahmadexe/prism-backend/services/jobs/data"
 	"github.com/ahmadexe/prism-backend/services/jobs/repository"
 	"github.com/gin-gonic/gin"
@@ -52,18 +54,22 @@ func (jh *JobsHandler) GetJob(ctx *gin.Context) {
 }
 
 func (jh *JobsHandler) ApplyJob(ctx *gin.Context) {
-	var application data.Request
+	var application data.JobApplication
+	
 	if err := ctx.ShouldBindJSON(&application); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
+	id := primitive.NewObjectID()
+	application.Id = id
+
 	if err := application.Validate(); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	jh.repo.ApplyForJob(ctx, application.ID, application.UserId)
+	jh.repo.ApplyForJob(ctx, application)
 }
 
 func (jh *JobsHandler) LikeJob(ctx *gin.Context) {

@@ -1,11 +1,14 @@
 package data
 
-import "github.com/go-playground/validator"
+import (
+	"github.com/go-playground/validator"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type JobApplication struct {
-	ID       string  `json:"id" bson:"_id"`
+	Id       primitive.ObjectID  `json:"id" bson:"_id"`
 	JobId    string  `json:"jobId" bson:"jobId" validate:"required"`
-	UserId   string  `json:"applicantId" bson:"applicantId" validate:"required"`
+	UserId   string  `json:"userId" bson:"userId" validate:"required"`
 	IsHired  bool    `json:"isHired" bson:"isHired"`
 	Username string  `json:"username" bson:"username" validate:"required"`
 	Avatar   *string `json:"avatar" bson:"avatar"`

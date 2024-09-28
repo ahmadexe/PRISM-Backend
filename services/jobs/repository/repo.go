@@ -134,28 +134,30 @@ func (jr *JobsRepo) ToggleLikeOnJob(ctx *gin.Context, id primitive.ObjectID, use
 	ctx.JSON(200, gin.H{"message": "Job unliked successfully."})
 }
 
-func (jr *JobsRepo) ApplyForJob(ctx *gin.Context, id primitive.ObjectID, userId primitive.ObjectID) {
+func (jr *JobsRepo) ApplyForJob(ctx *gin.Context, application data.JobApplication) {
 	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var job data.Job
-	filter := bson.M{"_id": id, "appliedBy": userId}
-	err := jr.jobsCollection.FindOne(context, filter).Decode(&job)
+	var applicationData data.JobApplication
+	filter := bson.M{"jobId": application.JobId, "userId": application.UserId}
+	err := jr.applicationsCollection.FindOne(context, filter).Decode(&applicationData)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			_, err = jr.jobsCollection.UpdateOne(context, bson.M{"_id": id}, bson.M{"$push": bson.M{"appliedBy": userId}})
+			_, err = jr.applicationsCollection.InsertOne(context, application)
 			if err != nil {
+				log.Println(err)
 				ctx.JSON(500, gin.H{"error": "Internal server error. Please try again later."})
 				return
 			}
-			ctx.JSON(200, gin.H{"message": "Job applied successfully."})
+			ctx.JSON(201, gin.H{"message": "Application submitted successfully."})
 			return
 		}
+		log.Println(err)
 		ctx.JSON(500, gin.H{"error": "Internal server error. Please try again later."})
 		return
 	}
 
-	ctx.JSON(200, gin.H{"message": "Job already applied."})
+	ctx.JSON(400, gin.H{"error": "You have already applied for this job."})
 }
 
 func (jr *JobsRepo) HireForJob(ctx *gin.Context, id primitive.ObjectID, userId primitive.ObjectID) {
