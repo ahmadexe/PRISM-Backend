@@ -79,7 +79,9 @@ func (repo *PostRepo) GetPosts(ctx *gin.Context) {
 	c, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	cursor, err := repo.postCollection.Find(c, bson.M{})
+	cursor, err := repo.postCollection.Find(c, bson.M{
+		"isBanned": false,
+	})
 	if err != nil {
 		log.Println(err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})

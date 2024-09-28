@@ -143,3 +143,14 @@ func (jh *JobsHandler) JobsAppliedByMe(ctx *gin.Context) {
 
 	jh.repo.JobsAppliedByMe(ctx, userId)
 }
+
+func (jh *JobsHandler) JobsByMe(ctx *gin.Context) {
+	userIdRaw := ctx.Param("id")
+	userId, err := primitive.ObjectIDFromHex(userIdRaw)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid id"})
+		return
+	}
+
+	jh.repo.JobsByMe(ctx, userId)
+}
