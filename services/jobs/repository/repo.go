@@ -15,11 +15,13 @@ import (
 
 type JobsRepo struct {
 	jobsCollection *mongo.Collection
+	applicationsCollection *mongo.Collection
 }
 
 func NewJobsRepo(client *mongo.Client) *JobsRepo {
 	collection := client.Database("jobs-db").Collection("jobs")
-	return &JobsRepo{jobsCollection: collection}
+	applicationsCollection := client.Database("jobs-db").Collection("applications")
+	return &JobsRepo{jobsCollection: collection, applicationsCollection: applicationsCollection}
 }
 
 func (jr *JobsRepo) CreateJob(ctx *gin.Context,job *data.Job) {
