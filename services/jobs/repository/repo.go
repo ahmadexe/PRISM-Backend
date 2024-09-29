@@ -256,3 +256,48 @@ func (jr *JobsRepo) JobsAppliedByMe(ctx *gin.Context, id primitive.ObjectID) {
 
 	ctx.JSON(http.StatusOK, gin.H{"data": jobs})
 }
+
+func (jr *JobsRepo) GetApplicationsForJob(ctx *gin.Context, id primitive.ObjectID) {
+	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := jr.applicationsCollection.Find(context, bson.M{"jobId": id})
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	var applications []data.JobApplication
+
+	if err = cursor.All(context, &applications); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": applications})
+}
+
+func (jr *JobsRepo) GetApplicationsByUser(ctx *gin.Context, id primitive.ObjectID) {
+	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := jr.applicationsCollection.Find(context, bson.M{"userId": id})
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	var applications []data.JobApplication
+
+	if err = cursor.All(context, &applications); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": applications})
+}
+

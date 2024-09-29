@@ -33,5 +33,7 @@ func (router *JobsRouter) SetupRoutes() {
 		jobs.GET("/jobs/applied/:id", router.jobsHandler.JobsAppliedByMe)
 		jobs.GET("/jobs/liked/:id", router.jobsHandler.JobsLikedByMe)
 		jobs.GET("/jobs/user/:id", router.jobsHandler.JobsByMe)
+		jobs.GET("jobs/application/job/:id", router.jobsHandler.GetJobApplicationsByJob)
+		jobs.GET("jobs/application/user/:id", router.jobsHandler.GetJobApplicationsByUser)
 	}
 }

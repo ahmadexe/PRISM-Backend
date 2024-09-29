@@ -160,3 +160,25 @@ func (jh *JobsHandler) JobsByMe(ctx *gin.Context) {
 
 	jh.repo.JobsByMe(ctx, userId)
 }
+
+func (jh *JobsHandler) GetJobApplicationsByJob(ctx *gin.Context) {
+	id := ctx.Param("id")
+	jobId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid id"})
+		return
+	}
+
+	jh.repo.GetApplicationsForJob(ctx, jobId)
+}
+
+func (jh *JobsHandler) GetJobApplicationsByUser(ctx *gin.Context) {
+	id := ctx.Param("id")
+	userId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid id"})
+		return
+	}
+
+	jh.repo.GetApplicationsByUser(ctx, userId)
+}
