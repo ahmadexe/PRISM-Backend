@@ -187,3 +187,20 @@ func (repo *AuthRepo) ToggleIsServiceProvider (id primitive.ObjectID, ctx *gin.C
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "User is updated.", "data": user})
 }
+
+func (repo *AuthRepo) UpdateDeviceToken(ctx *gin.Context, tokenReq data.TokenRequest) {
+	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": tokenReq.UserId}
+
+	update := bson.M{"$set": bson.M{"deviceToken": tokenReq.DeviceToken}}
+
+	if _, err := repo.collection.UpdateOne(context, filter, update); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating user in database. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Device token updated successfully."})
+}
