@@ -104,3 +104,21 @@ func (handler *AuthHandler) ToggleIsServiceProvider(ctx *gin.Context) {
 
 	handler.authRepo.ToggleIsServiceProvider(objectId, ctx)
 }
+
+func (handler *AuthHandler) UpdateDeviceToken(ctx *gin.Context) {
+	var tokenReq data.TokenRequest
+
+	if err := ctx.ShouldBindJSON(&tokenReq); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Request"})
+		return
+	}
+
+	if err := tokenReq.Validate(); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	handler.authRepo.UpdateDeviceToken(ctx, tokenReq)
+}
