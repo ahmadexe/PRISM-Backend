@@ -32,18 +32,18 @@ func main() {
 	gin.SetMode(configs.Mode)
 	router := gin.Default()
 
-	authRouter := routes.InitAuthRouter(authHanler, searchHandler, router)
-	authRouter.SetupRoutes(app)
-	
 	corsConfig := cors.Config{
-		AllowOrigins:     []string{"*"}, 
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		AllowCredentials: true,
-		MaxAge:           12 * time.Hour, 
+		MaxAge:           12 * time.Hour,
 	}
 
 	router.Use(cors.New(corsConfig))
+
+	authRouter := routes.InitAuthRouter(authHanler, searchHandler, router)
+	authRouter.SetupRoutes(app)
 
 	router.Run(configs.Host + ":" + configs.Port)
 
