@@ -36,7 +36,7 @@ func main() {
 	authRouter.SetupRoutes(app)
 	
 	corsConfig := cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "*"}, 
+		AllowOrigins:     []string{"*"}, 
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		AllowCredentials: true,
