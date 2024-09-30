@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	firebase "firebase.google.com/go"
 	"github.com/ahmadexe/prism-backend/services/auth/configs"
@@ -33,7 +34,17 @@ func main() {
 
 	authRouter := routes.InitAuthRouter(authHanler, searchHandler, router)
 	authRouter.SetupRoutes(app)
-	router.Use(cors.Default())
+	
+	corsConfig := cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173", "*"}, 
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour, 
+	}
+
+	router.Use(cors.New(corsConfig))
+
 	router.Run(configs.Host + ":" + configs.Port)
 
 	defer func() {

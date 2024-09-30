@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/ahmadexe/prism-backend/services/chats/configs"
 	"github.com/ahmadexe/prism-backend/services/chats/handlers"
 	"github.com/ahmadexe/prism-backend/services/chats/repository"
@@ -22,7 +24,15 @@ func main() {
 
 	chatRouter := routes.InitChatRouter(handler, router)
 	chatRouter.SetupRoutes()
-	router.Use(cors.Default())
+	corsConfig := cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173", "*"}, 
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour, 
+	}
+
+	router.Use(cors.New(corsConfig))
 
 	router.Run(configs.Host + ":" + configs.Port)
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"time"
 
 	"github.com/ahmadexe/prism-backend/services/jobs/configs"
 	"github.com/ahmadexe/prism-backend/services/jobs/handlers"
@@ -20,7 +21,15 @@ func main()  {
 	handler := handlers.InitJobHandler(jobsRepo)
 
 	router := gin.Default()
-	router.Use(cors.Default())
+	corsConfig := cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173", "*"}, 
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour, 
+	}
+
+	router.Use(cors.New(corsConfig))
 	
 	gin.SetMode(configs.Mode)
 
