@@ -23,21 +23,21 @@ func main() {
 	gin.SetMode(configs.Mode)
 	router := gin.Default()
 
+	corsConfig := cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}
+
+	router.Use(cors.New(corsConfig))
+
 	postRouter := routes.InitPostsRouter(postHanlder, router)
 	postRouter.SetupRoutes()
 
 	commentRouter := routes.InitCommentRouter(commentHandler, router)
 	commentRouter.SetupRoutes()
-	
-	corsConfig := cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "*"}, 
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour, 
-	}
-
-	router.Use(cors.New(corsConfig))
 
 	router.Run(configs.Host + ":" + configs.Port)
 }

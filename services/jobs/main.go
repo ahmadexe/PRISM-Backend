@@ -19,19 +19,19 @@ func main()  {
 	jobsRepo := repository.NewJobsRepo(client)
 
 	handler := handlers.InitJobHandler(jobsRepo)
-
+	
+	gin.SetMode(configs.Mode)
 	router := gin.Default()
 	corsConfig := cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "*"}, 
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		AllowCredentials: true,
-		MaxAge:           12 * time.Hour, 
+		MaxAge:           12 * time.Hour,
 	}
 
 	router.Use(cors.New(corsConfig))
 	
-	gin.SetMode(configs.Mode)
 
 	jobsRouter := routes.InitJobsRouter(handler, router)
 	jobsRouter.SetupRoutes()

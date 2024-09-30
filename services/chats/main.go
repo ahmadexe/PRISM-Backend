@@ -21,18 +21,19 @@ func main() {
 	go handler.HandleMessages()
 	gin.SetMode(configs.Mode)
 	router := gin.Default()
-
-	chatRouter := routes.InitChatRouter(handler, router)
-	chatRouter.SetupRoutes()
+	
 	corsConfig := cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "*"}, 
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		AllowCredentials: true,
-		MaxAge:           12 * time.Hour, 
+		MaxAge:           12 * time.Hour,
 	}
 
 	router.Use(cors.New(corsConfig))
+
+	chatRouter := routes.InitChatRouter(handler, router)
+	chatRouter.SetupRoutes()
 
 	router.Run(configs.Host + ":" + configs.Port)
 }
