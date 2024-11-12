@@ -12,7 +12,7 @@ type Configs struct {
 	Port  string
 	Host  string
 	DbUri string
-	Mode string
+	Mode  string
 }
 
 func InitConfigs() *Configs {
