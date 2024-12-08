@@ -204,3 +204,62 @@ func (repo *AuthRepo) UpdateDeviceToken(ctx *gin.Context, tokenReq data.TokenReq
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Device token updated successfully."})
 }
+
+func (repo *AuthRepo) GetFollowers(id primitive.ObjectID, ctx *gin.Context) {
+	c, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	filter := bson.M{"_id": id}
+	var user data.AuthData
+
+	if err := repo.collection.FindOne(c, filter).Decode(&user); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, user.Followers)
+}
+
+func (repo *AuthRepo) GetFollowing(id primitive.ObjectID, ctx *gin.Context) {
+	c, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	filter := bson.M{"_id": id}
+	var user data.AuthData
+
+	if err := repo.collection.FindOne(c, filter).Decode(&user); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, user.Following)
+}
+
+func (repo *AuthRepo) ToggleSupercharged(id primitive.ObjectID, ctx *gin.Context) {
+	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": id}
+	
+	var user data.AuthData
+
+	if err := repo.collection.FindOne(c, filter).Decode(&user); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	update := bson.M{"$set": bson.M{"isSupercharged": !user.IsSupercharged}}
+
+	if _, err := repo.collection.UpdateOne(c, filter, update); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating user in database. Please try again later."})
+		return
+	}
+
+	user.IsSupercharged = !user.IsSupercharged
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "User is updated.", "data": user})
+}
