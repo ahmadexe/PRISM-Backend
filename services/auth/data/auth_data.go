@@ -23,6 +23,7 @@ type AuthData struct {
 	Following         []primitive.ObjectID `json:"following" bson:"following"`
 	CreatedAt         int64                `json:"createdAt" bson:"createdAt"`
 	DeviceToken       string               `json:"deviceToken" bson:"deviceToken"`
+	IsSupercharged    bool                 `json:"isSupercharged" bson:"isSupercharged"`
 }
 
 func (authData *AuthData) MarshalJSON() ([]byte, error) {
