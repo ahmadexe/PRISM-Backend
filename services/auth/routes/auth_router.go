@@ -29,5 +29,8 @@ func (router *AuthRouter) SetupRoutes(app *firebase.App) {
 		auth.GET("/users/fetch/ws/:id", router.searchHandler.HandleConnections)
 		auth.PUT("/users/service/:id", middlewares.VerifyUser, router.authHandler.ToggleIsServiceProvider)
 		auth.PUT("/users/token", middlewares.VerifyUser, router.authHandler.UpdateDeviceToken)
+		auth.PUT("/users/supercharge", middlewares.VerifyUser, router.authHandler.ToggleIsSupercharged)
+		auth.GET("/users/followers/:id", middlewares.VerifyUser, router.authHandler.GetFollowers)
+		auth.GET("/users/following/:id", middlewares.VerifyUser, router.authHandler.GetFollowing)
 	}
 }

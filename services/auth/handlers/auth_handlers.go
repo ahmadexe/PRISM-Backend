@@ -122,3 +122,42 @@ func (handler *AuthHandler) UpdateDeviceToken(ctx *gin.Context) {
 
 	handler.authRepo.UpdateDeviceToken(ctx, tokenReq)
 }
+
+func (handler *AuthHandler) ToggleIsSupercharged(ctx *gin.Context) {
+	id := ctx.Param("id")
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	handler.authRepo.ToggleSupercharged(objectId, ctx)
+}
+
+func (handler *AuthHandler) GetFollowers(ctx *gin.Context) {
+	id := ctx.Param("id")
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	handler.authRepo.GetFollowers(objectId, ctx)
+}
+
+func (handler *AuthHandler) GetFollowing(ctx *gin.Context) {
+	id := ctx.Param("id")
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	handler.authRepo.GetFollowing(objectId, ctx)
+}
