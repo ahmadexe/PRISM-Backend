@@ -161,3 +161,16 @@ func (handler *AuthHandler) GetFollowing(ctx *gin.Context) {
 
 	handler.authRepo.GetFollowing(objectId, ctx)
 }
+
+func (handler *AuthHandler) ToggleIsSharingData(ctx *gin.Context) {
+	id := ctx.Param("id")
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	handler.authRepo.ToggleIsSharingData(objectId, ctx)
+}

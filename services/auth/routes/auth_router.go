@@ -32,5 +32,6 @@ func (router *AuthRouter) SetupRoutes(app *firebase.App) {
 		auth.PUT("/users/supercharge", middlewares.VerifyUser, router.authHandler.ToggleIsSupercharged)
 		auth.GET("/users/followers/:id", middlewares.VerifyUser, router.authHandler.GetFollowers)
 		auth.GET("/users/following/:id", middlewares.VerifyUser, router.authHandler.GetFollowing)
+		auth.PUT("/users/share", middlewares.VerifyUser, router.authHandler.ToggleIsSharingData)
 	}
 }

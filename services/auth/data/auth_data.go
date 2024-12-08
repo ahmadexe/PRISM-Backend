@@ -24,6 +24,7 @@ type AuthData struct {
 	CreatedAt         int64                `json:"createdAt" bson:"createdAt"`
 	DeviceToken       string               `json:"deviceToken" bson:"deviceToken"`
 	IsSupercharged    bool                 `json:"isSupercharged" bson:"isSupercharged"`
+	IsSharingData     bool                 `json:"isSharingData" bson:"isSharingData"`
 }
 
 func (authData *AuthData) MarshalJSON() ([]byte, error) {

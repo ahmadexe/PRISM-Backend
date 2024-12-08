@@ -263,3 +263,30 @@ func (repo *AuthRepo) ToggleSupercharged(id primitive.ObjectID, ctx *gin.Context
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "User is updated.", "data": user})
 }
+
+func (repo *AuthRepo) ToggleIsSharingData(id primitive.ObjectID, ctx *gin.Context) {
+	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": id}
+	
+	var user data.AuthData
+
+	if err := repo.collection.FindOne(c, filter).Decode(&user); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error. Please try again later."})
+		return
+	}
+
+	update := bson.M{"$set": bson.M{"isSharingData": !user.IsSharingData}}
+
+	if _, err := repo.collection.UpdateOne(c, filter, update); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating user in database. Please try again later."})
+		return
+	}
+
+	user.IsSharingData = !user.IsSharingData
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "User is updated.", "data": user})
+}
